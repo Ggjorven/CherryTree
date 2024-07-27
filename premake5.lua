@@ -71,7 +71,7 @@ workspace "CherryTree"
 	}
 
 group "Dependencies"
-	-- include "vendor/glfw"
+	include "vendor/glfw"
 	include "vendor/Pulse/Pulse"
 group ""
 
