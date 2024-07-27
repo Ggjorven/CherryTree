@@ -1,0 +1,6 @@
+[submodule "vendor/Pulse"]
+	path = vendor/Pulse
+	url = https://github.com/Ggjorven/Pulse.git
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/Ggjorven/glfw.git
