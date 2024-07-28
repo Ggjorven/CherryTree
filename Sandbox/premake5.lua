@@ -27,6 +27,7 @@ project "Sandbox"
 
 		"%{Dependencies.spdlog.IncludeDir}",
 		"%{Dependencies.glfw.IncludeDir}",
+		"%{Dependencies.glad.IncludeDir}",
 		"%{Dependencies.Pulse.IncludeDir}"
 	}
 

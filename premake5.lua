@@ -41,6 +41,11 @@ Dependencies =
 		LibName = "GLFW",
 		IncludeDir = "%{wks.location}/vendor/glfw/include"
 	},
+	glad = 
+	{
+		LibName = "Glad",
+		IncludeDir = "%{wks.location}/vendor/glad/include"
+	},
 	Pulse = 
 	{
 		LibName = "Pulse",
@@ -72,6 +77,7 @@ workspace "CherryTree"
 
 group "Dependencies"
 	include "vendor/glfw"
+	include "vendor/glad"
 	include "vendor/Pulse/Pulse"
 group ""
 

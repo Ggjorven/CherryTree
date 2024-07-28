@@ -34,12 +34,14 @@ project "CherryTree"
 
 		"%{Dependencies.spdlog.IncludeDir}",
 		"%{Dependencies.glfw.IncludeDir}",
+		"%{Dependencies.glad.IncludeDir}",
 		"%{Dependencies.Pulse.IncludeDir}"
 	}
 
 	links
 	{
 		"%{Dependencies.glfw.LibName}",
+		"%{Dependencies.glad.LibName}",
 		"%{Dependencies.Pulse.LibName}"
 	}
 
