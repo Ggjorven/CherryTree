@@ -50,10 +50,20 @@ project "CherryTree"
 		systemversion "latest"
 		staticruntime "on"
 
+		links
+		{
+			"opengl32"
+		}
+
 	filter "system:linux"
 		defines "CT_PLATFORM_LINUX"
 		systemversion "latest"
 		staticruntime "on"
+
+		links 
+		{
+			"GL"
+		}
 
 	filter "configurations:Debug"
 		defines "CT_CONFIG_DEBUG"

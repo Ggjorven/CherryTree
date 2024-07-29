@@ -2,6 +2,8 @@
 
 #include "CherryTree/Core/Window.hpp"
 
+#include "CherryTree/Renderer/GraphicsContext.hpp"
+
 #include <GLFW/glfw3.h>
 
 namespace Ct
@@ -51,6 +53,8 @@ namespace Ct
 		RendererSpecification m_RendererSpecs;
 
 		GLFWwindow* m_Window = nullptr;
+
+		Unique<GraphicsContext> m_Context = nullptr;
 	};
 
 }

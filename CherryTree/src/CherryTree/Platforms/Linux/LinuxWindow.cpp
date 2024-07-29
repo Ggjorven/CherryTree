@@ -33,12 +33,25 @@ namespace Ct
 			glfwSetErrorCallback(GLFWErrorCallBack);
 		}
 
-		if (rendererSpecs.API == RenderingAPI::Vulkan) glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		if (rendererSpecs.API == RenderingAPI::OpenGL)
+		{
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		}
+		else if (rendererSpecs.API == RenderingAPI::Vulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		}
 		m_Window = glfwCreateWindow((int)windowSpecs.Width, (int)windowSpecs.Height, windowSpecs.Title.c_str(), nullptr, nullptr);
 		s_Instances++;
 
-		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
+		if (m_RendererSpecs.API == RenderingAPI::OpenGL)
+			glfwMakeContextCurrent(m_Window);
 
+		m_Context = GraphicsContext::Create(m_RendererSpecs.API, (void*)m_Window);
+
+		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		// Event system
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{

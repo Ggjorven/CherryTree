@@ -5,6 +5,8 @@
 
 #include <Pulse/Enum/Enum.hpp>
 
+#include "CherryTree/Core/Logging.hpp"
+
 namespace Ct
 {
 
@@ -19,9 +21,16 @@ namespace Ct
 		bool VSync;
 
 	public:
-		constexpr RendererSpecification(const RenderingAPI api = RenderingAPI::Vulkan, BufferCount buffers = BufferCount::Triple, bool vsync = true)
-			: API(api), Buffers(buffers), VSync(vsync) {}
-		constexpr ~RendererSpecification() = default;
+		RendererSpecification(const RenderingAPI api = RenderingAPI::Vulkan, BufferCount buffers = BufferCount::Triple, bool vsync = true)
+			: API(api), Buffers(buffers), VSync(vsync) 
+		{
+			if (API == RenderingAPI::OpenGL && Buffers != BufferCount::Single)
+			{
+				CT_LOG_WARN("API selected == OpenGL. OpenGL BufferCount must be BufferCount::Single. Resetting...");
+				Buffers = BufferCount::Single;
+			}
+		}
+		~RendererSpecification() = default;
 	};
 
 }
