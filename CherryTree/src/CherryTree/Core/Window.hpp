@@ -25,7 +25,7 @@ namespace Ct
 	public:
 		WindowSpecification(uint32_t width = 1280, uint32_t height = 720, const std::string& title = "CherryTree Window", EventCallbackFn eventCallback = nullptr)
 			: Width(width), Height(height), Title(title), EventCallback(eventCallback) {}
-		constexpr ~WindowSpecification() = default;
+		~WindowSpecification() = default;
 	};
 
 	class Window // Window closes on destructor.

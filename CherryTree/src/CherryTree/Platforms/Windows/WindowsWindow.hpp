@@ -21,7 +21,7 @@ namespace Ct
 		WindowsWindowData() = default;
 		WindowsWindowData(const WindowSpecification& specs)
 			: Width(specs.Width), Height(specs.Height), Title(specs.Title), EventCallback(specs.EventCallback) {}
-		constexpr ~WindowsWindowData() = default;
+		~WindowsWindowData() = default;
 	};
 
 	class WindowsWindow : public Window

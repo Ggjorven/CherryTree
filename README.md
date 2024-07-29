@@ -35,7 +35,7 @@
         ```sh
         ./gen-vs2022-windows.bat
         ```
-    - MinGW make files: // TODO
+    - MinGW make files:
         ```sh
         ./gen-make-windows.bat
         ```
@@ -72,29 +72,81 @@
     ./Sandbox.exe
     ``` 
 - MinGW Make:
-    // TODO
-
-### Linux
-1. Navigate to the root of the directory
-2. Open a terminal
-3. Call make with desired configuration (debug or release):
+    1. Navigate to the root of the directory
+    2. Open a terminal.
+    3. Call make with desired configuration (debug, release or dist):
     ```sh
     make config=release
     ```
-4. Build files can be in the bin/%Config#-linux/ folder.
-5. (Optional) Open a terminal and run the Sandbox project:
+    4. Build files can be in the bin/%Config#-linux/ folder.
+    5. (Optional) Open a terminal and run the Sandbox project:
     ```sh
-    chmod +x Sandbox
-    ./Sandbox
+    make config=release
     ```
 
-### License
+### Linux
+Before you start make sure you have GLFW dependencies installed:
+
+#### Ubuntu/Debian
+
+```sh
+sudo apt-get update
+sudo apt-get install libx11-dev
+sudo apt-get install libxcursor-dev
+sudo apt-get install libxrandr-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxi-dev
+```
+
+#### Fedora
+```sh
+sudo dnf install libX11-devel
+sudo dnf install libXcursor-devel
+sudo dnf install libXrandr-devel
+sudo dnf install libXinerama-devel
+sudo dnf install libXi-devel
+```
+
+#### CentOS/RHEL
+```sh
+sudo yum install libX11-devel
+sudo yum install libXcursor-devel
+sudo yum install libXrandr-devel
+sudo yum install libXinerama-devel
+sudo yum install libXi-devel
+```
+
+#### Arch
+```sh
+sudo pacman -S libx11
+sudo pacman -S libxcursor
+sudo pacman -S libxrandr
+sudo pacman -S libxinerama
+sudo pacman -S libxi
+```
+
+#### Actual build:
+
+1. Navigate to the root of the directory
+2. Open a terminal
+3. Call make with desired configuration (debug, release or dist):
+```sh
+make config=release
+```
+4. Build files can be in the bin/%Config#-linux/ folder.
+5. (Optional) Open a terminal and run the Sandbox project:
+```sh
+chmod +x Sandbox
+./Sandbox
+```
+
+## License
 This project is licensed under the Apache 2.0 License. See [LICENSE](LICENSE.txt) for details.
 
-### Contributing
+## Contributing
 Contributions are welcome! Please fork the repository and create a pull request with your changes.
 
-### Third-Party Libraries
+## Third-Party Libraries
   - `Pulse` [https://github.com/Ggjorven/Pulse](https://github.com/Ggjorven/Pulse)
   - `spdlog` [https://github.com/gabime/spdlog/](https://github.com/gabime/spdlog/)
   - `glad` [https://github.com/Dav1dde/glad/tree/glad2](https://github.com/Dav1dde/glad/tree/glad2)

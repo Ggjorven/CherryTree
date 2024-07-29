@@ -28,17 +28,17 @@ namespace Ct
 		static void LogMessage(Log::Level level, std::string_view fmt, const Args&... args);
 
 		#ifndef CT_CONFIG_DIST
-		#define CT_LOG_TRACE(fmt, ...)	Ct::Log::LogMessage(Ct::Log::Level::Trace, fmt, __VA_ARGS__);
-		#define CT_LOG_INFO(fmt, ...)	Ct::Log::LogMessage(Ct::Log::Level::Info, fmt, __VA_ARGS__);
-		#define CT_LOG_WARN(fmt, ...)	Ct::Log::LogMessage(Ct::Log::Level::Warn, fmt, __VA_ARGS__);
-		#define CT_LOG_ERROR(fmt, ...)	Ct::Log::LogMessage(Ct::Log::Level::Error, fmt, __VA_ARGS__);
-		#define CT_LOG_FATAL(fmt, ...)	Ct::Log::LogMessage(Ct::Log::Level::Fatal, fmt, __VA_ARGS__);
+		#define CT_LOG_TRACE(...)	Ct::Log::LogMessage(Ct::Log::Level::Trace, __VA_ARGS__);
+		#define CT_LOG_INFO(...)	Ct::Log::LogMessage(Ct::Log::Level::Info, __VA_ARGS__);
+		#define CT_LOG_WARN(...)	Ct::Log::LogMessage(Ct::Log::Level::Warn, __VA_ARGS__);
+		#define CT_LOG_ERROR(...)	Ct::Log::LogMessage(Ct::Log::Level::Error, __VA_ARGS__);
+		#define CT_LOG_FATAL(...)	Ct::Log::LogMessage(Ct::Log::Level::Fatal, __VA_ARGS__);
 		#else
-		#define CT_LOG_TRACE(fmt, ...)
-		#define CT_LOG_INFO(fmt, ...)
-		#define CT_LOG_WARN(fmt, ...)
-		#define CT_LOG_ERROR(fmt, ...)
-		#define CT_LOG_FATAL(fmt, ...)
+		#define CT_LOG_TRACE(...)
+		#define CT_LOG_INFO(...)
+		#define CT_LOG_WARN(...)
+		#define CT_LOG_ERROR(...)
+		#define CT_LOG_FATAL(...)
 		#endif
 
 		static std::shared_ptr<spdlog::logger>& GetLogger();

@@ -21,7 +21,7 @@ namespace Ct
 		LinuxWindowData() = default;
 		LinuxWindowData(const WindowSpecification& specs)
 			: Width(specs.Width), Height(specs.Height), Title(specs.Title), EventCallback(specs.EventCallback) {}
-		constexpr ~LinuxWindowData() = default;
+		~LinuxWindowData() = default;
 	};
 
 	class LinuxWindow : public Window
