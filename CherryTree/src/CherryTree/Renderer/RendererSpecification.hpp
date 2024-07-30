@@ -10,8 +10,8 @@
 namespace Ct
 {
 
-	enum class RenderingAPI		{ None = 0, OpenGL, Vulkan };			// Choice of API 
-	enum class BufferCount		{ Single = 1, Double = 2, Triple = 3};	// Amount of buffers
+	enum class RenderingAPI : uint8_t		{ None = 0, OpenGL, Vulkan };			// Choice of API 
+	enum class BufferCount : uint8_t		{ Single = 1, Double = 2, Triple = 3};	// Amount of buffers
 	
 	struct RendererSpecification
 	{

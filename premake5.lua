@@ -79,6 +79,7 @@ group "Dependencies"
 	include "vendor/glfw"
 	include "vendor/glad"
 	include "vendor/Pulse/Pulse"
+	include "vendor/vma"
 group ""
 
 group "Main"

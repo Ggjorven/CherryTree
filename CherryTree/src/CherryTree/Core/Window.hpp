@@ -8,7 +8,7 @@
 #include "CherryTree/Core/WindowSpecs.hpp"
 
 #include "CherryTree/OpenGL/OpenGLWindow.hpp"
-// TODO: Vulkan
+#include "CherryTree/Vulkan/VulkanWindow.hpp"
 
 namespace Ct
 {

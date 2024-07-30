@@ -35,14 +35,18 @@ project "CherryTree"
 		"%{Dependencies.spdlog.IncludeDir}",
 		"%{Dependencies.glfw.IncludeDir}",
 		"%{Dependencies.glad.IncludeDir}",
-		"%{Dependencies.Pulse.IncludeDir}"
+		"%{Dependencies.Pulse.IncludeDir}",
+
+		"%{Dependencies.VMA.IncludeDir}"
 	}
 
 	links
 	{
 		"%{Dependencies.glfw.LibName}",
 		"%{Dependencies.glad.LibName}",
-		"%{Dependencies.Pulse.LibName}"
+		"%{Dependencies.Pulse.LibName}",
+
+		"%{Dependencies.VMA.LibName}"
 	}
 
 	filter "system:windows"
@@ -50,8 +54,15 @@ project "CherryTree"
 		systemversion "latest"
 		staticruntime "on"
 
+		includedirs
+		{
+			"%{Dependencies.Vulkan.Windows.IncludeDir}"
+		}
+
 		links
 		{
+			"%{Dependencies.Vulkan.Windows.LibDir}/%{Dependencies.Vulkan.Windows.LibName}",
+
 			"opengl32"
 		}
 
@@ -60,8 +71,15 @@ project "CherryTree"
 		systemversion "latest"
 		staticruntime "on"
 
+		includedirs
+		{
+			"%{Dependencies.Vulkan.Linux.IncludeDir}"
+		}
+
 		links 
 		{
+			"%{Dependencies.Vulkan.Linux.LibDir}/%{Dependencies.Vulkan.Linux.LibName}",
+
 			"Xrandr", "Xi", "GLU", "GL", "X11", "dl", "pthread", "stdc++fs"
 		}
 

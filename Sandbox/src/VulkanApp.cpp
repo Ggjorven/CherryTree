@@ -1,9 +1,9 @@
-#include "OpenGLApp.hpp"
+#include "VulkanApp.hpp"
 
 #include <Pulse/Time/Timer.hpp>
 #include <Pulse/Thread/Thread.hpp>
 
-OpenGLApp::OpenGLApp()
+VulkanApp::VulkanApp()
 {
     WindowSpecification windowSpecs = WindowSpecification(1280, 720, "First Window", [this](Event& e) { this->EventCallback(e); });
     RendererSpecification rendererSpecs = RendererSpecification(BufferCount::Triple, false);
@@ -11,7 +11,7 @@ OpenGLApp::OpenGLApp()
     m_Window = Unique<Window<API>>::Create(windowSpecs, rendererSpecs);
 }
 
-void OpenGLApp::Run()
+void VulkanApp::Run()
 {
     Pulse::Time::Timer timer = {};
 
@@ -26,7 +26,7 @@ void OpenGLApp::Run()
     }
 }
 
-void OpenGLApp::EventCallback(Event& e)
+void VulkanApp::EventCallback(Event& e)
 {
     EventHandler handler(e);
 

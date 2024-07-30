@@ -1,9 +1,7 @@
 #include "ctpch.h"
-#include "OpenGLWindow.hpp"
+#include "VulkanWindow.hpp"
 
 #include "CherryTree/Core/Logging.hpp"
-
-#include <glad/glad.h>
 
 namespace Ct
 {
@@ -15,7 +13,7 @@ namespace Ct
 
 
 
-	Window<RenderingAPI::OpenGL>::Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
+	Window<RenderingAPI::Vulkan>::Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
 		: m_WindowData(windowSpecs), m_RendererSpecs(rendererSpecs)
 	{
 		CT_ASSERT(m_WindowData.EventCallback, "No event callback was passed in.");
@@ -30,17 +28,13 @@ namespace Ct
 			glfwSetErrorCallback(GLFWErrorCallBack);
 		}
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int)GraphicsContext<RenderingAPI::OpenGL>::Version.first);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, (int)GraphicsContext<RenderingAPI::OpenGL>::Version.second);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_Window = glfwCreateWindow((int)windowSpecs.Width, (int)windowSpecs.Height, windowSpecs.Title.c_str(), nullptr, nullptr);
 		CT_ASSERT(m_Window, "Failed to create window...");
 		WindowData::s_Instances++;
 
-		glfwMakeContextCurrent(m_Window);
-		m_Context = Unique<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window);
+		m_Context = Unique<GraphicsContext<RenderingAPI::Vulkan>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		
@@ -140,32 +134,28 @@ namespace Ct
 			data.EventCallback(event);
 		});
 
-		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}", "// TODO: Query")
 
 		// TODO: Renderer
 	}
 
-	Window<RenderingAPI::OpenGL>::~Window()
+	Window<RenderingAPI::Vulkan>::~Window()
 	{
 		if (m_Window)
 			Close();
 	}
 
-	void Window<RenderingAPI::OpenGL>::PollEvents()
+	void Window<RenderingAPI::Vulkan>::PollEvents()
 	{
-		if (WindowData::s_Instances > 1)
-			glfwMakeContextCurrent(m_Window);
-
 		glfwPollEvents();
 	}
 
-	void Window<RenderingAPI::OpenGL>::SwapBuffers()
+	void Window<RenderingAPI::Vulkan>::SwapBuffers()
 	{
-		if (m_Window)
-			glfwSwapBuffers(m_Window);
+		// TODO: Renderer Present
 	}
 
-	void Window<RenderingAPI::OpenGL>::Close()
+	void Window<RenderingAPI::Vulkan>::Close()
 	{
 		// TODO: Renderer
 
@@ -180,20 +170,20 @@ namespace Ct
 		}
 	}
 
-	void Window<RenderingAPI::OpenGL>::SetVSync(bool vsync)
+	void Window<RenderingAPI::Vulkan>::SetVSync(bool vsync)
 	{
 		// TODO: Renderer
 
 		m_RendererSpecs.VSync;
 	}
 
-	void Window<RenderingAPI::OpenGL>::SetTitle(const std::string& title)
+	void Window<RenderingAPI::Vulkan>::SetTitle(const std::string& title)
 	{
 		m_WindowData.Title = title;
 		glfwSetWindowTitle(m_Window, m_WindowData.Title.c_str());
 	}
 
-	std::pair<float, float> Window<RenderingAPI::OpenGL>::GetPosition() const
+	std::pair<float, float> Window<RenderingAPI::Vulkan>::GetPosition() const
 	{
 		int xPos = 0, yPos = 0;
 		glfwGetWindowPos(m_Window, &xPos, &yPos);

@@ -5,7 +5,7 @@
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
 #include "CherryTree/OpenGL/OpenGLContext.hpp"
-// TODO: Vulkan
+#include "CherryTree/Vulkan/VulkanContext.hpp"
 
 namespace Ct
 {

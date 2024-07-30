@@ -15,7 +15,7 @@ namespace Ct
 	class Window;
 
 	template<>
-	class Window<RenderingAPI::OpenGL>
+	class Window<RenderingAPI::Vulkan>
 	{
 	public:
 		Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs);
@@ -44,7 +44,7 @@ namespace Ct
 
 		GLFWwindow* m_Window = nullptr;
 
-		Unique<GraphicsContext<RenderingAPI::OpenGL>> m_Context = nullptr;
+		Unique<GraphicsContext<RenderingAPI::Vulkan>> m_Context = nullptr;
 	};
 
 }

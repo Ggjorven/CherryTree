@@ -2,7 +2,7 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "off"
+	staticruntime "on"
 	
 	architecture "x86_64"
 	
@@ -28,7 +28,9 @@ project "Sandbox"
 		"%{Dependencies.spdlog.IncludeDir}",
 		"%{Dependencies.glfw.IncludeDir}",
 		"%{Dependencies.glad.IncludeDir}",
-		"%{Dependencies.Pulse.IncludeDir}"
+		"%{Dependencies.Pulse.IncludeDir}",
+
+		"%{Dependencies.VMA.IncludeDir}",
 	}
 
 	links
@@ -49,17 +51,30 @@ project "Sandbox"
 		systemversion "latest"
 		staticruntime "on"
 
+		includedirs
+		{
+			"%{Dependencies.Vulkan.Windows.IncludeDir}",
+		}
+
 	filter "system:linux"
 		defines "CT_PLATFORM_LINUX"
 		systemversion "latest"
 		staticruntime "on"
+
+		includedirs
+		{
+			"%{Dependencies.Vulkan.Linux.IncludeDir}",
+		}
 
 		-- Otherwise it doesn't link properly on linux (weird)
 		links
 		{
 			"%{Dependencies.glfw.LibName}",
 			"%{Dependencies.glad.LibName}",
-			"%{Dependencies.Pulse.LibName}"
+			"%{Dependencies.Pulse.LibName}",
+
+			"%{Dependencies.VMA.LibName}",
+			"%{Dependencies.Vulkan.Linux.LibDir}/%{Dependencies.Vulkan.Linux.LibName}",
 		}
 
 	filter "configurations:Debug"
