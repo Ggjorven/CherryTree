@@ -1,4 +1,5 @@
 #pragma once
+#if defined(CT_PLATFORM_WINDOWS)
 
 #include "CherryTree/Core/Window.hpp"
 
@@ -58,3 +59,5 @@ namespace Ct
 	};
 
 }
+
+#endif

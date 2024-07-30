@@ -54,6 +54,14 @@ project "Sandbox"
 		systemversion "latest"
 		staticruntime "on"
 
+		-- Otherwise it doesn't link properly on linux (weird)
+		links
+		{
+			"%{Dependencies.glfw.LibName}",
+			"%{Dependencies.glad.LibName}",
+			"%{Dependencies.Pulse.LibName}"
+		}
+
 	filter "configurations:Debug"
 		defines "CT_CONFIG_DEBUG"
 		runtime "Debug"

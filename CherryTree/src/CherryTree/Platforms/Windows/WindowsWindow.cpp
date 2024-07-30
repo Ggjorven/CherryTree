@@ -1,7 +1,12 @@
 #include "ctpch.h"
 #include "WindowsWindow.hpp"
+#if defined(CT_PLATFORM_WINDOWS)
 
 #include "CherryTree/Core/Logging.hpp"
+
+#include "CherryTree/OpenGL/OpenGLContext.hpp"
+
+#include <glad/glad.h>
 
 namespace Ct
 {
@@ -35,15 +40,17 @@ namespace Ct
 
 		if (rendererSpecs.API == RenderingAPI::OpenGL)
 		{
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int)OpenGLContext::Version.first);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, (int)OpenGLContext::Version.second);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		}
 		else if (rendererSpecs.API == RenderingAPI::Vulkan)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 		m_Window = glfwCreateWindow((int)windowSpecs.Width, (int)windowSpecs.Height, windowSpecs.Title.c_str(), nullptr, nullptr);
+		CT_ASSERT(m_Window, "Failed to create window...");
 		s_Instances++;
 
 		if (m_RendererSpecs.API == RenderingAPI::OpenGL)
@@ -191,3 +198,5 @@ namespace Ct
 	}
 
 }
+
+#endif

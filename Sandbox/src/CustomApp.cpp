@@ -2,14 +2,14 @@
 
 #include <Pulse/Thread/Thread.hpp>
 
-#include <glad/glad.h>
+#include <glad/glad.h> // TODO: Remove
 
 CustomApp::CustomApp()
 {
-    WindowSpecification windowSpecs1 = WindowSpecification(1280, 720, "First Window", [this](Event& e) { this->EventCallback(e); });
-    RendererSpecification rendererSpecs1 = RendererSpecification(RenderingAPI::OpenGL, BufferCount::Triple, false);
+    WindowSpecification windowSpecs = WindowSpecification(1280, 720, "First Window", [this](Event& e) { this->EventCallback(e); });
+    RendererSpecification rendererSpecs = RendererSpecification(RenderingAPI::OpenGL, BufferCount::Triple, false);
 
-    m_Window = Window::Create(windowSpecs1, rendererSpecs1);
+    m_Window = Window::Create(windowSpecs, rendererSpecs);
 }
 
 void CustomApp::Run()
@@ -18,7 +18,7 @@ void CustomApp::Run()
     {
         m_Window->PollEvents();
 
-        // TODO: remove 
+        // TODO: Remove 
         glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 

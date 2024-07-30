@@ -11,7 +11,8 @@ namespace Ct
 
 	OpenGLContext::OpenGLContext(void* window)
 	{
-		CT_ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "Failed to initialize GLAD.");
+		int result = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		CT_ASSERT(result, "Failed to initialize GLAD.");
 	}
 
 	OpenGLContext::~OpenGLContext()

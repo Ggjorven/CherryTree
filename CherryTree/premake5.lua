@@ -62,7 +62,7 @@ project "CherryTree"
 
 		links 
 		{
-			"GL"
+			"Xrandr", "Xi", "GLU", "GL", "X11", "dl", "pthread", "stdc++fs"
 		}
 
 	filter "configurations:Debug"
