@@ -9,13 +9,13 @@
 namespace Ct
 {
 
-	OpenGLContext::OpenGLContext(void* window)
+	GraphicsContext<RenderingAPI::OpenGL>::GraphicsContext(void* window)
 	{
-		int result = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		int result = gladLoadGLLoader((GLADloadproc)&glfwGetProcAddress);
 		CT_ASSERT(result, "Failed to initialize GLAD.");
 	}
 
-	OpenGLContext::~OpenGLContext()
+	GraphicsContext<RenderingAPI::OpenGL>::~GraphicsContext()
 	{
 	}
 

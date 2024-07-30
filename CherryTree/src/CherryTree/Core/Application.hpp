@@ -7,6 +7,7 @@ namespace Ct
 	class Application
 	{
 	public:
+		// Constructors
 		Application();
 		~Application();
 	};

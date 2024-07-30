@@ -1,18 +1,12 @@
 #include "ctpch.h"
-#include "WindowsWindow.hpp"
-#if defined(CT_PLATFORM_WINDOWS)
+#include "OpenGLWindow.hpp"
 
 #include "CherryTree/Core/Logging.hpp"
-
-#include "CherryTree/OpenGL/OpenGLContext.hpp"
 
 #include <glad/glad.h>
 
 namespace Ct
 {
-
-	static uint32_t s_Instances = 0u;
-	static bool s_GLFWinitialized = false;
 
 	static void GLFWErrorCallBack(int errorCode, const char* description)
 	{
@@ -21,48 +15,38 @@ namespace Ct
 
 
 
-	WindowsWindow::WindowsWindow(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
+	Window<RenderingAPI::OpenGL>::Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
 		: m_WindowData(windowSpecs), m_RendererSpecs(rendererSpecs)
 	{
 		CT_ASSERT(m_WindowData.EventCallback, "No event callback was passed in.");
 
-		// TODO: Renderer
-
-		if (!s_GLFWinitialized)
+		if (!WindowData::s_GLFWinitialized)
 		{
 			int succes = glfwInit();
 			if (!succes)
 				CT_LOG_ERROR("(GLFW) glfwInit() failed");
 
-			s_GLFWinitialized = true;
+			WindowData::s_GLFWinitialized = true;
 			glfwSetErrorCallback(GLFWErrorCallBack);
 		}
 
-		if (rendererSpecs.API == RenderingAPI::OpenGL)
-		{
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int)OpenGLContext::Version.first);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, (int)OpenGLContext::Version.second);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		}
-		else if (rendererSpecs.API == RenderingAPI::Vulkan)
-		{
-			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		}
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, (int)GraphicsContext<RenderingAPI::OpenGL>::Version.first);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, (int)GraphicsContext<RenderingAPI::OpenGL>::Version.second);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+
 		m_Window = glfwCreateWindow((int)windowSpecs.Width, (int)windowSpecs.Height, windowSpecs.Title.c_str(), nullptr, nullptr);
 		CT_ASSERT(m_Window, "Failed to create window...");
-		s_Instances++;
+		WindowData::s_Instances++;
 
-		if (m_RendererSpecs.API == RenderingAPI::OpenGL)
-			glfwMakeContextCurrent(m_Window);
-
-		m_Context = GraphicsContext::Create(m_RendererSpecs.API, (void*)m_Window);
+		glfwMakeContextCurrent(m_Window);
+		m_Context = Unique<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
-		// Event system
+		
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Width = width;
 			data.Height = height;
 
@@ -77,7 +61,7 @@ namespace Ct
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			data.Closed = true;
 
 			WindowCloseEvent event = WindowCloseEvent();
@@ -86,7 +70,7 @@ namespace Ct
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)
 			{
@@ -113,7 +97,7 @@ namespace Ct
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int keycode)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			KeyTypedEvent event = KeyTypedEvent(keycode);
 			data.EventCallback(event);
@@ -121,7 +105,7 @@ namespace Ct
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action)
 			{
@@ -142,7 +126,7 @@ namespace Ct
 
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent event = MouseScrolledEvent((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
@@ -150,46 +134,55 @@ namespace Ct
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xPos, double yPos)
 		{
-			WindowsWindowData& data = *(WindowsWindowData*)glfwGetWindowUserPointer(window);
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent event = MouseMovedEvent((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		});
+
+		// TODO: Renderer
 	}
 
-	WindowsWindow::~WindowsWindow()
+	Window<RenderingAPI::OpenGL>::~Window()
 	{
 		if (m_Window)
 			Close();
 	}
 
-	void WindowsWindow::PollEvents()
+	void Window<RenderingAPI::OpenGL>::PollEvents()
 	{
-		if (m_RendererSpecs.API == RenderingAPI::OpenGL && s_Instances > 1)
+		if (WindowData::s_Instances > 1)
 			glfwMakeContextCurrent(m_Window);
 
 		glfwPollEvents();
 	}
 
-	void WindowsWindow::SwapBuffers()
+	void Window<RenderingAPI::OpenGL>::SwapBuffers()
 	{
-		if (m_RendererSpecs.API == RenderingAPI::OpenGL && m_Window)
+		if (m_Window)
 			glfwSwapBuffers(m_Window);
 	}
 
-	void WindowsWindow::Close()
+	void Window<RenderingAPI::OpenGL>::Close()
 	{
 		// TODO: Renderer
 
 		glfwDestroyWindow(m_Window);
 		m_Window = nullptr;
-		s_Instances--;
+		WindowData::s_Instances--;
 
-		if (s_Instances == 0)
+		if (WindowData::s_Instances == 0)
 			glfwTerminate();
 	}
 
-	std::pair<float, float> WindowsWindow::GetPosition() const
+	void Window<RenderingAPI::OpenGL>::SetVSync(bool vsync)
+	{
+		// TODO: Renderer
+
+		m_RendererSpecs.VSync;
+	}
+
+	std::pair<float, float> Window<RenderingAPI::OpenGL>::GetPosition() const
 	{
 		int xPos = 0, yPos = 0;
 		glfwGetWindowPos(m_Window, &xPos, &yPos);
@@ -198,5 +191,3 @@ namespace Ct
 	}
 
 }
-
-#endif

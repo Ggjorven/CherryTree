@@ -1,9 +1,9 @@
-#include "CustomApp.hpp"
+#include "OpenGLApp.hpp"
 
 int main(int argc, char* argv[])
 {
-    CustomApp app = {};
-    app.Run();
+    OpenGLApp openglApp = {};
+    openglApp.Run();
     
     return 0;
 }

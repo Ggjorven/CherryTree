@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CherryTree/Renderer/GraphicsContext.hpp"
+#include "CherryTree/Renderer/RendererSpecification.hpp"
 
 #include <cstdint>
 #include <utility>
@@ -8,11 +8,15 @@
 namespace Ct
 {
 
-	class OpenGLContext : public GraphicsContext
+	template<RenderingAPI API>
+	class GraphicsContext;
+
+	template<>
+	class GraphicsContext<RenderingAPI::OpenGL>
 	{
 	public:
-		OpenGLContext(void* window);
-		~OpenGLContext();
+		GraphicsContext(void* window);
+		~GraphicsContext();
 
     public:
 		inline static constinit const std::pair<uint8_t, uint8_t> Version = { 4, 5 };

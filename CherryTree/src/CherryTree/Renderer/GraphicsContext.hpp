@@ -4,16 +4,14 @@
 
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
+#include "CherryTree/OpenGL/OpenGLContext.hpp"
+// TODO: Vulkan
+
 namespace Ct
 {
 
-	class GraphicsContext
-	{
-	public:
-		GraphicsContext() = default;
-		virtual ~GraphicsContext() = default;
-		
-		static Unique<GraphicsContext> Create(const RenderingAPI api, void* window);
-	};
+	// Note: This does nothing, it just shows the class
+	template<RenderingAPI API>
+	class GraphicsContext;
 
 }

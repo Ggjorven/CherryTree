@@ -1,32 +1,31 @@
-#include "CustomApp.hpp"
+#include "OpenGLApp.hpp"
 
+#include <Pulse/Time/Timer.hpp>
 #include <Pulse/Thread/Thread.hpp>
 
-#include <glad/glad.h> // TODO: Remove
-
-CustomApp::CustomApp()
+OpenGLApp::OpenGLApp()
 {
     WindowSpecification windowSpecs = WindowSpecification(1280, 720, "First Window", [this](Event& e) { this->EventCallback(e); });
-    RendererSpecification rendererSpecs = RendererSpecification(RenderingAPI::OpenGL, BufferCount::Triple, false);
+    RendererSpecification rendererSpecs = RendererSpecification(BufferCount::Triple, false);
 
-    m_Window = Window::Create(windowSpecs, rendererSpecs);
+    m_Window = Unique<Window<API>>::Create(windowSpecs, rendererSpecs);
 }
 
-void CustomApp::Run()
+void OpenGLApp::Run()
 {
+    Pulse::Time::Timer timer = {};
+
     while (m_Window->IsOpen())
     {
+        timer.Reset();
         m_Window->PollEvents();
 
-        // TODO: Remove 
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
         m_Window->SwapBuffers();
+        CT_LOG_TRACE("Deltatime: {0:.4f}ms", timer.ElapsedMillis());
     }
 }
 
-void CustomApp::EventCallback(Event& e)
+void OpenGLApp::EventCallback(Event& e)
 {
     EventHandler handler(e);
 
