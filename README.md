@@ -4,16 +4,15 @@
 
 ## Features
 
-- Written in C++20
-- Utilizes OpenGL and Vulkan APIs
-- Experiment with various rendering techniques.
+- Initializes your desired API for you.
+- API dependant wrapper classes around basic functionality (VertexBuffers, Renderpasses, etc.)
+- Easy to use utility classes.
 
 ## Getting Started
 
 ### Prerequisites
 
 - C++20 compatible compiler
-- Vulkan SDK (In the future I wish to help you install this.)
 
 ## Installation
 
@@ -22,22 +21,27 @@
 1. Clone the repository:
     ```sh
     git clone --recursive https://github.com/ggjorven/CherryTree.git
-    cd PuCherryTreelse
+    cd CherryTree
     ```
 
 2. Navigate to the scripts folder:
     ```sh
-    cd scripts
+    cd scripts/windows
     ```
 
-3. Choose what you want it build to:
+3. (Optional) If you haven't already installed the Vulkan SDK you can install it like this:
+    ```sh
+    ./install-vulkansdk.bat
+    ```
+
+4. Choose what you want it build to:
     - Visual Studio 17 2022:
         ```sh
-        ./gen-vs2022-windows.bat
+        ./gen-vs2022.bat
         ```
     - MinGW make files:
         ```sh
-        ./gen-make-windows.bat
+        ./gen-make.bat
         ```
 
 ### Linux
@@ -50,13 +54,25 @@
 
 2. Navigate to the scripts folder:
     ```sh
-    cd scripts
+    cd scripts/linux
     ```
 
-3. Generate make files:
+3. (Optional) If you haven't already installed the premake5 build system you can install it like this:
     ```sh
-    chmod +x gen-make-linux.sh
-    ./gen-make-linux.sh
+    chmod +x install-premake5.sh
+    ./install-premake5.sh
+    ```
+
+4. (Optional) If you haven't already installed the Vulkan SDK you can install it like this:
+    ```sh
+    chmod +x install-vulkansdk.sh
+    ./install-vulkansdk.sh
+    ```
+
+5. Generate make files:
+    ```sh
+    chmod +x gen-make.sh
+    ./gen-make.sh
     ```
 
 ## Building
@@ -68,61 +84,37 @@
     3. Start building in your desired configuration
     4. Build files can be in the bin/%Config%-windows/ folder.
     5. (Optional) Open a terminal and run the Sandbox project:
-    ```sh
-    ./Sandbox.exe
-    ``` 
+       
+        ```sh
+        ./Sandbox.exe
+        ```
+
 - MinGW Make:
     1. Navigate to the root of the directory
     2. Open a terminal.
     3. Call make with desired configuration (debug, release or dist):
-    ```sh
-    make config=release
-    ```
-    4. Build files can be in the bin/%Config#-linux/ folder.
-    5. (Optional) Open a terminal and run the Sandbox project:
-    ```sh
-    make config=release
-    ```
+       
+        ```sh
+        make config=release
+        ```
+        
+    5. Build files can be in the bin/%Config#-linux/ folder.
+    6. (Optional) Open a terminal and run the Sandbox project:
+        ```sh
+        ./Sandbox.exe
+        ```
 
 ### Linux
 Before you start make sure you have GLFW dependencies installed:
+- libx11, libxcursor, libxrandr, libxinerama, libxi
 
-#### Ubuntu/Debian
+If you don't have these installed we have created a script to help you out.
+This script works on these architectures (**Ubuntu/Debian**, **Fedora**, **CentOS/RHEL**, **Arch**).
 
+This scripts can be found in the 'scripts/linux/' folder, then run these commands:
 ```sh
-sudo apt-get update
-sudo apt-get install libx11-dev
-sudo apt-get install libxcursor-dev
-sudo apt-get install libxrandr-dev
-sudo apt-get install libxinerama-dev
-sudo apt-get install libxi-dev
-```
-
-#### Fedora
-```sh
-sudo dnf install libX11-devel
-sudo dnf install libXcursor-devel
-sudo dnf install libXrandr-devel
-sudo dnf install libXinerama-devel
-sudo dnf install libXi-devel
-```
-
-#### CentOS/RHEL
-```sh
-sudo yum install libX11-devel
-sudo yum install libXcursor-devel
-sudo yum install libXrandr-devel
-sudo yum install libXinerama-devel
-sudo yum install libXi-devel
-```
-
-#### Arch
-```sh
-sudo pacman -S libx11
-sudo pacman -S libxcursor
-sudo pacman -S libxrandr
-sudo pacman -S libxinerama
-sudo pacman -S libxi
+chmod +x install-glfw-dependencies.sh
+./install-glfw-dependencies.sh
 ```
 
 #### Actual build:
@@ -130,15 +122,18 @@ sudo pacman -S libxi
 1. Navigate to the root of the directory
 2. Open a terminal
 3. Call make with desired configuration (debug, release or dist):
-```sh
-make config=release
-```
-4. Build files can be in the bin/%Config#-linux/ folder.
-5. (Optional) Open a terminal and run the Sandbox project:
-```sh
-chmod +x Sandbox
-./Sandbox
-```
+   
+    ```sh
+    make config=release
+    ```
+    
+5. Build files can be in the bin/%Config#-linux/ folder.
+6. (Optional) Open a terminal and run the Sandbox project:
+   
+    ```sh
+    chmod +x Sandbox
+    ./Sandbox
+    ```
 
 ## License
 This project is licensed under the Apache 2.0 License. See [LICENSE](LICENSE.txt) for details.
@@ -150,3 +145,5 @@ Contributions are welcome! Please fork the repository and create a pull request 
   - `Pulse` [https://github.com/Ggjorven/Pulse](https://github.com/Ggjorven/Pulse)
   - `spdlog` [https://github.com/gabime/spdlog/](https://github.com/gabime/spdlog/)
   - `glad` [https://github.com/Dav1dde/glad/tree/glad2](https://github.com/Dav1dde/glad/tree/glad2)
+  - `glm` [https://github.com/icaven/glm.git](https://github.com/icaven/glm.git)
+  - `vma` [https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git)

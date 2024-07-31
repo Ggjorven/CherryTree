@@ -152,7 +152,7 @@ namespace Ct
 	Window<RenderingAPI::OpenGL>::~Window()
 	{
 		if (m_Window)
-			Close();
+			ForceClose();
 	}
 
 	void Window<RenderingAPI::OpenGL>::PollEvents()
@@ -171,6 +171,13 @@ namespace Ct
 
 	void Window<RenderingAPI::OpenGL>::Close()
 	{
+		m_WindowData.Closed = true;
+	}
+
+	void Window<RenderingAPI::OpenGL>::ForceClose()
+	{
+		m_WindowData.Closed = true;
+
 		// TODO: Renderer
 
 		glfwDestroyWindow(m_Window);

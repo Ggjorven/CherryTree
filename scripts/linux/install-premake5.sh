@@ -25,10 +25,3 @@ if ! command -v premake5 &> /dev/null; then
     echo "premake5 installed successfully."
 else
     echo "premake5 is already installed."
-fi
-
-# Go up a directory
-cd ..
-
-# Run premake5 gmake2
-premake5 gmake2

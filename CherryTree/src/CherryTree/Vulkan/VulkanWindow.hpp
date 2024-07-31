@@ -28,7 +28,9 @@ namespace Ct
 		void PollEvents();
 		void SwapBuffers();
 
-		void Close(); // Make sure to not use any window function after this call
+		void Close();
+		// Dont' use in any type of EventCallback! + Make sure to not use any window function after this call
+		void ForceClose(); 
 
 		inline uint32_t GetWidth() const { return m_WindowData.Width; }
 		inline uint32_t GetHeight() const { return m_WindowData.Height; }
@@ -43,8 +45,8 @@ namespace Ct
 		inline void* GetNativeWindow() { return (void*)m_Window; }
 
 	public:
-		Ref<Input<RenderingAPI::Vulkan>> Input = nullptr;
-		Ref<Renderer<RenderingAPI::Vulkan>> Renderer = nullptr;
+		Ref<Ct::Input<RenderingAPI::Vulkan>> Input = nullptr;
+		Ref<Ct::Renderer<RenderingAPI::Vulkan>> Renderer = nullptr;
 
 	private:
 		WindowData m_WindowData;

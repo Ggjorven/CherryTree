@@ -59,7 +59,6 @@ namespace Ct
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.Closed = true;
 
 			WindowCloseEvent event = WindowCloseEvent();
 			data.EventCallback(event);
@@ -145,7 +144,7 @@ namespace Ct
 	Window<RenderingAPI::Vulkan>::~Window()
 	{
 		if (m_Window)
-			Close();
+			ForceClose();
 	}
 
 	void Window<RenderingAPI::Vulkan>::PollEvents()
@@ -160,6 +159,13 @@ namespace Ct
 
 	void Window<RenderingAPI::Vulkan>::Close()
 	{
+		m_WindowData.Closed = true;
+	}
+
+	void Window<RenderingAPI::Vulkan>::ForceClose()
+	{
+		m_WindowData.Closed = true;
+
 		// TODO: Renderer
 
 		glfwDestroyWindow(m_Window);
