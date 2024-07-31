@@ -1,5 +1,6 @@
 #include "ctpch.h"
 #include "OpenGLWindow.hpp"
+#if defined (CT_PLATFORM_WINDOWS) || defined(CT_PLATFORM_LINUX)
 
 #include "CherryTree/Core/Logging.hpp"
 
@@ -16,7 +17,7 @@ namespace Ct
 
 
 	Window<RenderingAPI::OpenGL>::Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
-		: m_WindowData(windowSpecs), m_RendererSpecs(rendererSpecs)
+		: m_WindowData(windowSpecs)
 	{
 		CT_ASSERT(m_WindowData.EventCallback, "No event callback was passed in.");
 
@@ -40,7 +41,9 @@ namespace Ct
 		WindowData::s_Instances++;
 
 		glfwMakeContextCurrent(m_Window);
-		m_Context = Unique<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window);
+		m_Context = Ref<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window, rendererSpecs);
+
+		Input = Ref<Ct::Input<RenderingAPI::OpenGL>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		
@@ -143,6 +146,7 @@ namespace Ct
 		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 		// TODO: Renderer
+		Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create(m_Context);
 	}
 
 	Window<RenderingAPI::OpenGL>::~Window()
@@ -183,8 +187,6 @@ namespace Ct
 	void Window<RenderingAPI::OpenGL>::SetVSync(bool vsync)
 	{
 		// TODO: Renderer
-
-		m_RendererSpecs.VSync;
 	}
 
 	void Window<RenderingAPI::OpenGL>::SetTitle(const std::string& title)
@@ -202,3 +204,5 @@ namespace Ct
 	}
 
 }
+
+#endif

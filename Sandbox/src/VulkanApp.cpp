@@ -13,16 +13,27 @@ VulkanApp::VulkanApp()
 
 void VulkanApp::Run()
 {
-    Pulse::Time::Timer timer = {};
+    Pulse::Time::Timer deltaTimer = {};
+    Pulse::Time::Timer intervalTimer = {};
+    double interval = 0.300; // Seconds
+    uint32_t FPS = 0;
 
     while (m_Window->IsOpen())
     {
-        timer.Reset();
+        deltaTimer.Reset();
         m_Window->PollEvents();
 
         m_Window->SwapBuffers();
-        uint64_t FPS = 1.0 / timer.ElapsedSeconds();
-        CT_LOG_TRACE("Deltatime: {0:.4f}ms | FPS: {1}", timer.ElapsedMillis(), FPS);
+
+        // Update FPS
+        FPS++;
+        if (intervalTimer.ElapsedSeconds() >= interval)
+        {
+            CT_LOG_TRACE("Deltatime: {0:.4f}ms | FPS: {1} ({2} / {3:.5f})", deltaTimer.ElapsedMillis(), static_cast<uint32_t>(FPS / intervalTimer.ElapsedSeconds()), FPS, intervalTimer.ElapsedSeconds());
+            
+            intervalTimer.Reset();
+            FPS = 0;
+        }
     }
 }
 

@@ -1,10 +1,14 @@
 #pragma once
+#if defined (CT_PLATFORM_WINDOWS) || defined(CT_PLATFORM_LINUX)
 
 #include "CherryTree/Core/Memory.hpp"
 #include "CherryTree/Core/WindowSpecs.hpp"
 
 #include "CherryTree/Renderer/GraphicsContext.hpp"
 #include "CherryTree/Renderer/RendererSpecification.hpp"
+
+#include "CherryTree/OpenGL/OpenGLInput.hpp"
+#include "CherryTree/OpenGL/OpenGLRenderer.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -33,18 +37,23 @@ namespace Ct
 		void SetVSync(bool vsync);
 		void SetTitle(const std::string& title);
 
-		inline bool IsVSync() const { return m_RendererSpecs.VSync; }
+		inline bool IsVSync() const { return m_Context->GetSpecification().VSync; }
 		inline bool IsOpen() const { return !m_WindowData.Closed; }
 
 		inline void* GetNativeWindow() { return (void*)m_Window; }
 
+	public:
+		Ref<Input<RenderingAPI::OpenGL>> Input = nullptr;
+		Ref<Renderer<RenderingAPI::OpenGL>> Renderer = nullptr;
+
 	private:
 		WindowData m_WindowData;
-		RendererSpecification m_RendererSpecs; // TODO: Move to renderer
 
 		GLFWwindow* m_Window = nullptr;
 
-		Unique<GraphicsContext<RenderingAPI::OpenGL>> m_Context = nullptr;
+		Ref<GraphicsContext<RenderingAPI::OpenGL>> m_Context = nullptr;
 	};
 
 }
+
+#endif

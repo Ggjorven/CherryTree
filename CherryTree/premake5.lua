@@ -35,6 +35,7 @@ project "CherryTree"
 		"%{Dependencies.spdlog.IncludeDir}",
 		"%{Dependencies.glfw.IncludeDir}",
 		"%{Dependencies.glad.IncludeDir}",
+		"%{Dependencies.glm.IncludeDir}",
 		"%{Dependencies.Pulse.IncludeDir}",
 
 		"%{Dependencies.VMA.IncludeDir}"

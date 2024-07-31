@@ -9,10 +9,13 @@
 namespace Ct
 {
 
-	GraphicsContext<RenderingAPI::OpenGL>::GraphicsContext(void* window)
+	GraphicsContext<RenderingAPI::OpenGL>::GraphicsContext(void* window, const RendererSpecification& specs)
+		: m_Window(window), m_Specification(specs)
 	{
 		int result = gladLoadGLLoader((GLADloadproc)&glfwGetProcAddress);
 		CT_ASSERT(result, "Failed to initialize GLAD.");
+
+		glfwSwapInterval(specs.VSync);
 	}
 
 	GraphicsContext<RenderingAPI::OpenGL>::~GraphicsContext()

@@ -1,5 +1,6 @@
 #include "ctpch.h"
 #include "VulkanWindow.hpp"
+#if defined(CT_PLATFORM_WINDOWS) || defined(CT_PLATFORM_LINUX)
 
 #include "CherryTree/Core/Logging.hpp"
 
@@ -14,7 +15,7 @@ namespace Ct
 
 
 	Window<RenderingAPI::Vulkan>::Window(const WindowSpecification windowSpecs, const RendererSpecification rendererSpecs)
-		: m_WindowData(windowSpecs), m_RendererSpecs(rendererSpecs)
+		: m_WindowData(windowSpecs)
 	{
 		CT_ASSERT(m_WindowData.EventCallback, "No event callback was passed in.");
 
@@ -34,7 +35,9 @@ namespace Ct
 		CT_ASSERT(m_Window, "Failed to create window...");
 		WindowData::s_Instances++;
 
-		m_Context = Unique<GraphicsContext<RenderingAPI::Vulkan>>::Create((void*)m_Window);
+		m_Context = Ref<GraphicsContext<RenderingAPI::Vulkan>>::Create((void*)m_Window, rendererSpecs);
+
+		Input = Ref<Ct::Input<RenderingAPI::Vulkan>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		
@@ -134,9 +137,9 @@ namespace Ct
 			data.EventCallback(event);
 		});
 
-		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}", "// TODO: Query")
+		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}.{1}.XXX", GraphicsContext<RenderingAPI::Vulkan>::Version.first, GraphicsContext<RenderingAPI::Vulkan>::Version.second);
 
-		// TODO: Renderer
+		Renderer = Ref<Ct::Renderer<RenderingAPI::Vulkan>>::Create(m_Context);
 	}
 
 	Window<RenderingAPI::Vulkan>::~Window()
@@ -152,7 +155,7 @@ namespace Ct
 
 	void Window<RenderingAPI::Vulkan>::SwapBuffers()
 	{
-		// TODO: Renderer Present
+		Renderer->Present();
 	}
 
 	void Window<RenderingAPI::Vulkan>::Close()
@@ -173,8 +176,6 @@ namespace Ct
 	void Window<RenderingAPI::Vulkan>::SetVSync(bool vsync)
 	{
 		// TODO: Renderer
-
-		m_RendererSpecs.VSync;
 	}
 
 	void Window<RenderingAPI::Vulkan>::SetTitle(const std::string& title)
@@ -192,3 +193,5 @@ namespace Ct
 	}
 
 }
+
+#endif

@@ -46,6 +46,10 @@ Dependencies =
 		LibName = "Glad",
 		IncludeDir = "%{wks.location}/vendor/glad/include"
 	},
+	glm = 
+	{
+		IncludeDir = "%{wks.location}/vendor/glm"
+	},
 	Pulse = 
 	{
 		LibName = "Pulse",
