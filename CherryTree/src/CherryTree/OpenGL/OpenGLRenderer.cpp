@@ -11,13 +11,18 @@
 namespace Ct
 {
 
-	Renderer<RenderingAPI::OpenGL>::Renderer(Ref<GraphicsContext<RenderingAPI::OpenGL>> context)
-		: m_Context(context)
+	Renderer<RenderingAPI::OpenGL>::Renderer(void* window, const RendererSpecification& specs)
+		: m_Window(window), m_Specification(specs)
 	{
 	}
 
 	Renderer<RenderingAPI::OpenGL>::~Renderer()
 	{
+	}
+
+	void Renderer<RenderingAPI::OpenGL>::Init()
+	{
+		glfwSwapInterval(m_Specification.VSync);
 	}
 
 }

@@ -4,6 +4,12 @@
 
 #include "CherryTree/Core/Logging.hpp"
 
+#include "CherryTree/Vulkan/VulkanUtils.hpp"
+#include "CherryTree/Vulkan/VulkanContext.hpp"
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 namespace Ct
 {
 
@@ -35,8 +41,16 @@ namespace Ct
 		CT_ASSERT(m_Window, "Failed to create window...");
 		WindowData::s_Instances++;
 
-		m_Context = Ref<GraphicsContext<RenderingAPI::Vulkan>>::Create((void*)m_Window, rendererSpecs);
-		m_Context->Init();
+		using Context = GraphicsContext<RenderingAPI::Vulkan>;
+
+		if (Context::IncUsers() == 1)
+			Context::CreateInstance();
+
+		VkSurfaceKHR surface = VK_NULL_HANDLE;
+		VK_CHECK_RESULT(glfwCreateWindowSurface(Context::GetVkInstance(), m_Window, nullptr, &surface));
+
+		if (Context::IncUsers() == 1)
+			Context::CreateDevices(surface);
 
 		m_Input = Ref<Input<RenderingAPI::Vulkan>>::Create((void*)m_Window);
 
@@ -137,9 +151,9 @@ namespace Ct
 			data.EventCallback(event);
 		});
 
-		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}.{1}.XXX", GraphicsContext<RenderingAPI::Vulkan>::Version.first, GraphicsContext<RenderingAPI::Vulkan>::Version.second);
+		m_Renderer = Ref<Renderer<RenderingAPI::Vulkan>>::Create((void*)m_Window, rendererSpecs, surface);
 
-		m_Renderer = Ref<Renderer<RenderingAPI::Vulkan>>::Create(m_Context);
+		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}.{1}.XXX", GraphicsContext<RenderingAPI::Vulkan>::Version.first, GraphicsContext<RenderingAPI::Vulkan>::Version.second);
 	}
 
 	Window<RenderingAPI::Vulkan>::~Window()
@@ -166,6 +180,9 @@ namespace Ct
 	void Window<RenderingAPI::Vulkan>::ForceClose()
 	{
 		m_WindowData.Closed = true;
+
+		if (GraphicsContext<RenderingAPI::Vulkan>::DecUsers() == 0)
+			GraphicsContext<RenderingAPI::Vulkan>::Destroy();
 
 		// TODO: Renderer
 

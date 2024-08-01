@@ -4,14 +4,15 @@
 
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
-#include "CherryTree/Vulkan/VulkanContext.hpp"
+#include <vulkan/vulkan.h>
 
 #include <vector>
 
-#include <vulkan/vulkan.h>
-
 namespace Ct
 {
+
+	template<RenderingAPI API>
+	class Renderer;
 
 	template<RenderingAPI API>
 	class CommandBuffer;
@@ -22,11 +23,10 @@ namespace Ct
 	class CommandBuffer<RenderingAPI::Vulkan> : public RefCounted
 	{
 	public:
-		CommandBuffer(Ref<GraphicsContext<RenderingAPI::Vulkan>> context);
+		CommandBuffer(Ref<Renderer<RenderingAPI::Vulkan>> renderer);
 		virtual ~CommandBuffer();
 
-		void Begin();
-		void End();
+		// The Begin, End & Submit methods are in the Renderer class.
 
 		inline const VkSemaphore GetVkRenderFinishedSemaphore(uint32_t index) const { return m_RenderFinishedSemaphores[index]; }
 		inline const VkFence GetVkInFlightFence(uint32_t index) const { return m_InFlightFences[index]; }
@@ -45,7 +45,7 @@ namespace Ct
 	class VulkanCommand // For running simple commands
 	{
 	public:
-		VulkanCommand(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, bool start = false);
+		VulkanCommand(const VkCommandPool commandPool, bool start = false);
 		virtual ~VulkanCommand();
 
 		void Begin();
@@ -56,7 +56,7 @@ namespace Ct
 		inline const VkCommandBuffer GetVulkanCommandBuffer() const { return m_CommandBuffer; }
 
 	private:
-		Ref<GraphicsContext<RenderingAPI::Vulkan>> m_Context;
+		VkCommandPool m_CommandPool = VK_NULL_HANDLE; // Reference to the command pool (for the destructor)
 		VkCommandBuffer m_CommandBuffer = VK_NULL_HANDLE;
 	};
 

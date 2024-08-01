@@ -25,7 +25,7 @@ namespace Ct
 		std::optional<uint32_t> ComputeFamily;
 		std::optional<uint32_t> PresentFamily;
 
-		static QueueFamilyIndices Find(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice device);
+		static QueueFamilyIndices Find(const VkSurfaceKHR surface, const VkPhysicalDevice device);
 
 	public:
 		inline bool IsComplete() const { return GraphicsFamily.has_value() && ComputeFamily.has_value() && PresentFamily.has_value(); }
@@ -38,7 +38,7 @@ namespace Ct
 		std::vector<VkSurfaceFormatKHR> Formats;
 		std::vector<VkPresentModeKHR> PresentModes;
 
-		static SwapChainSupportDetails Query(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice device);
+		static SwapChainSupportDetails Query(const VkSurfaceKHR surface, const VkPhysicalDevice device);
 	};
 
 
@@ -46,17 +46,17 @@ namespace Ct
 	class VulkanPhysicalDevice : public RefCounted
 	{
 	public:
-		VulkanPhysicalDevice(Ref<GraphicsContext<RenderingAPI::Vulkan>> context);
+		VulkanPhysicalDevice(const VkSurfaceKHR surface);
 		virtual ~VulkanPhysicalDevice();
 
 		inline const VkFormat GetDepthFormat() const { return m_DepthFormat; }
 		inline const VkPhysicalDevice GetVkPhysicalDevice() const { return m_PhysicalDevice; }
 
-		static Ref<VulkanPhysicalDevice> Select(Ref<GraphicsContext<RenderingAPI::Vulkan>> context);
+		static Ref<VulkanPhysicalDevice> Select(const VkSurfaceKHR surface);
 
 	private:
-		bool PhysicalDeviceSuitable(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice& device);
-		bool ExtensionsSupported(const VkPhysicalDevice& device);
+		bool PhysicalDeviceSuitable(const VkSurfaceKHR surface, const VkPhysicalDevice device);
+		bool ExtensionsSupported(const VkPhysicalDevice device);
 		VkFormat GetDepthFormat();
 
 	private:

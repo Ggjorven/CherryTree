@@ -4,6 +4,8 @@
 
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
+#include <vulkan/vulkan.h>
+
 #include <cstdint>
 #include <utility>
 
@@ -13,22 +15,25 @@ namespace Ct
 	template<RenderingAPI API>
 	class Renderer;
 
-	template<RenderingAPI API>
-	class GraphicsContext;
-
 	template<>
 	class Renderer<RenderingAPI::Vulkan> : public RefCounted
 	{
 	public:
-		Renderer(Ref<GraphicsContext<RenderingAPI::Vulkan>> context);
+		Renderer(void* window, const RendererSpecification& specs, const VkSurfaceKHR surface);
 		~Renderer();
+
+		void Init();
 
 		void Present();
 
-	private:
-		Ref<GraphicsContext<RenderingAPI::Vulkan>> m_Context;
+		inline const RendererSpecification& GetSpecification() const { return m_Specification; }
 
-		friend class GraphicsContext<RenderingAPI::Vulkan>;
+	private:
+		void* m_Window;
+		RendererSpecification m_Specification;
+
+		VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
+		//Ref<VulkanSwapChain> m_SwapChain = nullptr;
 	};
 
 }

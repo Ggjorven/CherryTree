@@ -9,10 +9,10 @@
 namespace Ct
 {
 
-	VulkanDevice::VulkanDevice(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, Ref<VulkanPhysicalDevice> physicalDevice)
+	VulkanDevice::VulkanDevice(const VkSurfaceKHR surface, Ref<VulkanPhysicalDevice> physicalDevice)
 		: m_PhysicalDevice(physicalDevice)
 	{
-		QueueFamilyIndices indices = QueueFamilyIndices::Find(context, m_PhysicalDevice->GetVkPhysicalDevice());
+		QueueFamilyIndices indices = QueueFamilyIndices::Find(surface, m_PhysicalDevice->GetVkPhysicalDevice());
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
@@ -69,9 +69,9 @@ namespace Ct
 		vkDeviceWaitIdle(m_LogicalDevice);
 	}
 
-	Ref<VulkanDevice> VulkanDevice::Create(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, Ref<VulkanPhysicalDevice> physicalDevice)
+	Ref<VulkanDevice> VulkanDevice::Create(const VkSurfaceKHR surface, Ref<VulkanPhysicalDevice> physicalDevice)
 	{
-		return Ref<VulkanDevice>::Create(context, physicalDevice);
+		return Ref<VulkanDevice>::Create(surface, physicalDevice);
 	}
 
 }

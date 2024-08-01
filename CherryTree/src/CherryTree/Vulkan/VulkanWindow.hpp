@@ -4,7 +4,6 @@
 #include "CherryTree/Core/Memory.hpp"
 #include "CherryTree/Core/WindowSpecs.hpp"
 
-#include "CherryTree/Renderer/GraphicsContext.hpp"
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
 #include "CherryTree/Vulkan/VulkanInput.hpp"
@@ -39,7 +38,7 @@ namespace Ct
 		void SetVSync(bool vsync);
 		void SetTitle(const std::string& title);
 
-		inline bool IsVSync() const { return m_Context->GetSpecification().VSync; }
+		inline bool IsVSync() const { return m_Renderer->GetSpecification().VSync; }
 		inline bool IsOpen() const { return !m_WindowData.Closed; }
 
 		inline void* GetNativeWindow() { return (void*)m_Window; }
@@ -52,7 +51,6 @@ namespace Ct
 
 		GLFWwindow* m_Window = nullptr;
 
-		Ref<GraphicsContext<RenderingAPI::Vulkan>> m_Context = nullptr;
 		Ref<Renderer<RenderingAPI::Vulkan>> m_Renderer = nullptr;
 		Ref<Input<RenderingAPI::Vulkan>> m_Input = nullptr;
 	};

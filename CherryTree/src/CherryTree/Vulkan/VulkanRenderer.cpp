@@ -11,12 +11,16 @@
 namespace Ct
 {
 
-	Renderer<RenderingAPI::Vulkan>::Renderer(Ref<GraphicsContext<RenderingAPI::Vulkan>> context)
-		: m_Context(context)
+	Renderer<RenderingAPI::Vulkan>::Renderer(void* window, const RendererSpecification& specs, const VkSurfaceKHR surface)
+		: m_Window(window), m_Specification(specs), m_Surface(surface)
 	{
 	}
 
 	Renderer<RenderingAPI::Vulkan>::~Renderer()
+	{
+	}
+
+	void Renderer<RenderingAPI::Vulkan>::Init()
 	{
 	}
 

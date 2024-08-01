@@ -5,8 +5,6 @@
 
 #include "CherryTree/Vulkan/VulkanUtils.hpp"
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
 ///////////////////////////////////////////////////////////
@@ -45,34 +43,23 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL VulkanDebugCallback(VkDebugUtilsMessageSev
 namespace Ct
 {
 
+	VkInstance GraphicsContext<RenderingAPI::Vulkan>::s_VulkanInstance = VK_NULL_HANDLE;
+	VkDebugUtilsMessengerEXT GraphicsContext<RenderingAPI::Vulkan>::s_DebugMessenger = VK_NULL_HANDLE;
+
+	Ref<VulkanPhysicalDevice> GraphicsContext<RenderingAPI::Vulkan>::s_PhysicalDevice = nullptr;
+	Ref<VulkanDevice> GraphicsContext<RenderingAPI::Vulkan>::s_Device = nullptr;
+
+	uint32_t GraphicsContext<RenderingAPI::Vulkan>::s_VulkanUsers = 0;
+
 	const std::vector<const char*> GraphicsContext<RenderingAPI::Vulkan>::s_RequestedValidationLayers = { "VK_LAYER_KHRONOS_validation" };
 	const std::vector<const char*> GraphicsContext<RenderingAPI::Vulkan>::s_RequestedDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-	GraphicsContext<RenderingAPI::Vulkan>::GraphicsContext(void* window, const RendererSpecification& specs)
-		: m_Window(window), m_Specification(specs)
+
+
+	void GraphicsContext<RenderingAPI::Vulkan>::CreateInstance()
 	{
-	}
+		CT_ASSERT((s_VulkanUsers == 1), "Vulkan has already been initialized");
 
-	GraphicsContext<RenderingAPI::Vulkan>::~GraphicsContext()
-	{
-		m_Device->Wait();
-
-		/*
-		m_SwapChain.reset();
-		VulkanAllocator::Destroy();
-		*/
-
-		m_Device.Reset();
-
-		if constexpr (s_Validation)
-			DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
-
-		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
-		vkDestroyInstance(m_VulkanInstance, nullptr);
-	}
-
-	void GraphicsContext<RenderingAPI::Vulkan>::Init()
-	{
 		///////////////////////////////////////////////////////////
 		// Instance Creation
 		///////////////////////////////////////////////////////////
@@ -137,34 +124,48 @@ namespace Ct
 			createInfo.pNext = nullptr;
 		}
 
-		VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance));
+		VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &s_VulkanInstance));
 
 		///////////////////////////////////////////////////////////
 		// Debugger Creation
 		///////////////////////////////////////////////////////////
 		if constexpr (s_Validation)
 		{
-			VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(m_VulkanInstance, &debugCreateInfo, nullptr, &m_DebugMessenger));
+			VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(s_VulkanInstance, &debugCreateInfo, nullptr, &s_DebugMessenger));
 		}
+	}
 
-		///////////////////////////////////////////////////////////
-		// Surface Creation
-		///////////////////////////////////////////////////////////
-		GLFWwindow* handle = static_cast<GLFWwindow*>(m_Window);
-		VK_CHECK_RESULT(glfwCreateWindowSurface(m_VulkanInstance, handle, nullptr, &m_Surface));
+	void GraphicsContext<RenderingAPI::Vulkan>::CreateDevices(const VkSurfaceKHR surface)
+	{
+		CT_ASSERT((s_VulkanUsers == 1), "Vulkan has already been initialized");
 
 		///////////////////////////////////////////////////////////
 		// Other
 		///////////////////////////////////////////////////////////
-		m_PhysicalDevice = VulkanPhysicalDevice::Select(this);
-		m_Device = VulkanDevice::Create(this, m_PhysicalDevice);
+		s_PhysicalDevice = VulkanPhysicalDevice::Select(surface);
+		s_Device = VulkanDevice::Create(surface, s_PhysicalDevice);
 
 		/*
 		VulkanAllocator::Init();
-		auto& window = Application::Get().GetWindow();
-		m_SwapChain = VulkanSwapChain::Create(m_VulkanInstance, m_Device);
-		m_SwapChain->Init(window.GetWidth(), window.GetHeight(), window.IsVSync());
 		*/
+	}
+
+	void GraphicsContext<RenderingAPI::Vulkan>::Destroy()
+	{
+		CT_ASSERT((s_VulkanUsers == 0), "Tried to destroy Vulkan while it is still being used.");
+
+		s_Device->Wait();
+
+		/*
+		VulkanAllocator::Destroy();
+		*/
+
+		s_Device.Reset();
+
+		if constexpr (s_Validation)
+			DestroyDebugUtilsMessengerEXT(s_VulkanInstance, s_DebugMessenger, nullptr);
+
+		vkDestroyInstance(s_VulkanInstance, nullptr);
 	}
 
 }

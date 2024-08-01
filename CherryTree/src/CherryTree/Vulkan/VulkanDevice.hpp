@@ -17,7 +17,7 @@ namespace Ct
 	class VulkanDevice : public RefCounted
 	{
 	public:
-		VulkanDevice(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, Ref<VulkanPhysicalDevice> physicalDevice);
+		VulkanDevice(const VkSurfaceKHR surface, Ref<VulkanPhysicalDevice> physicalDevice);
 		virtual ~VulkanDevice();
 
 		void Wait() const;
@@ -30,7 +30,7 @@ namespace Ct
 
 		inline Ref<VulkanPhysicalDevice> GetPhysicalDevice() const { return m_PhysicalDevice; }
 
-		static Ref<VulkanDevice> Create(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, Ref<VulkanPhysicalDevice> physicalDevice);
+		static Ref<VulkanDevice> Create(const VkSurfaceKHR surface, Ref<VulkanPhysicalDevice> physicalDevice);
 
 	private:
 		Ref<VulkanPhysicalDevice> m_PhysicalDevice;

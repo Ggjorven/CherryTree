@@ -4,6 +4,8 @@
 
 #include "CherryTree/Core/Logging.hpp"
 
+#include "CherryTree/OpenGL/OpenGLContext.hpp"
+
 #include <glad/glad.h>
 
 namespace Ct
@@ -41,7 +43,11 @@ namespace Ct
 		WindowData::s_Instances++;
 
 		glfwMakeContextCurrent(m_Window);
-		m_Context = Ref<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window, rendererSpecs);
+
+		using Context = GraphicsContext<RenderingAPI::OpenGL>;
+
+		if (Context::IncUsers() == 1)
+			GraphicsContext<RenderingAPI::OpenGL>::Init();
 
 		m_Input = Ref<Ct::Input<RenderingAPI::OpenGL>>::Create((void*)m_Window);
 
@@ -143,9 +149,9 @@ namespace Ct
 			data.EventCallback(event);
 		});
 
-		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+		m_Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create((void*)m_Window, rendererSpecs);
 
-		m_Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create(m_Context);
+		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 	}
 
 	Window<RenderingAPI::OpenGL>::~Window()
@@ -176,6 +182,9 @@ namespace Ct
 	void Window<RenderingAPI::OpenGL>::ForceClose()
 	{
 		m_WindowData.Closed = true;
+
+		if (GraphicsContext<RenderingAPI::OpenGL>::DecUsers() == 0)
+			GraphicsContext<RenderingAPI::OpenGL>::Destroy();
 
 		// TODO: Renderer
 

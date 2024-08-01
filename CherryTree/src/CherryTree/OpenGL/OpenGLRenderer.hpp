@@ -20,11 +20,16 @@ namespace Ct
 	class Renderer<RenderingAPI::OpenGL> : public RefCounted
 	{
 	public:
-		Renderer(Ref<GraphicsContext<RenderingAPI::OpenGL>> context);
+		Renderer(void* window, const RendererSpecification& specs);
 		~Renderer();
 
+		void Init();
+
+		inline const RendererSpecification& GetSpecification() const { return m_Specification; }
+
 	private:
-		Ref<GraphicsContext<RenderingAPI::OpenGL>> m_Context;
+		void* m_Window;
+		RendererSpecification m_Specification;
 
 		friend class GraphicsContext<RenderingAPI::OpenGL>;
 	};

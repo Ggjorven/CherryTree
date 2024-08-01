@@ -24,51 +24,46 @@ namespace Ct
 
 
 	template<>
-	class GraphicsContext<RenderingAPI::Vulkan> : public RefCounted
+	class GraphicsContext<RenderingAPI::Vulkan>
 	{
 	///////////////////////////////////////////////////////////
 	// Core functionality
 	///////////////////////////////////////////////////////////
 	public:
-		GraphicsContext(void* window, const RendererSpecification& specs);
-		~GraphicsContext();
+		static void CreateInstance();
+		static void CreateDevices(const VkSurfaceKHR surface);
+		static void Destroy();
 
-		void Init();
+		inline static uint32_t IncUsers() { return ++s_VulkanUsers; }
+		inline static uint32_t DecUsers() { return --s_VulkanUsers; }
 
-		inline const RendererSpecification& GetSpecification() const { return m_Specification; }
+		inline static const VkInstance GetVkInstance() { return s_VulkanInstance; }
+		inline static const VkDebugUtilsMessengerEXT GetVkDebugger() { return s_DebugMessenger; }
 
-		inline const VkInstance GetVkInstance() const { return m_VulkanInstance; }
-		inline const VkDebugUtilsMessengerEXT GetVkDebugger() const { return m_DebugMessenger; }
-		inline const VkSurfaceKHR GetVkSurface() const { return m_Surface; }
-
-		inline Ref<VulkanPhysicalDevice> GetPhysicalDevice() const { return m_PhysicalDevice; }
-		inline Ref<VulkanDevice> GetDevice() const { return m_Device; }
+		inline static Ref<VulkanPhysicalDevice> GetPhysicalDevice() { return s_PhysicalDevice; }
+		inline static Ref<VulkanDevice> GetDevice() { return s_Device; }
 
 	///////////////////////////////////////////////////////////
 	// Private variables
 	///////////////////////////////////////////////////////////
 	private:
-		void* m_Window;
-		RendererSpecification m_Specification;
+		static VkInstance s_VulkanInstance;
+		static VkDebugUtilsMessengerEXT s_DebugMessenger;
+		
+		static Ref<VulkanPhysicalDevice> s_PhysicalDevice;
+		static Ref<VulkanDevice> s_Device;
 
-		VkInstance m_VulkanInstance = VK_NULL_HANDLE;
-		VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
-		VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
-
-		Ref<VulkanPhysicalDevice> m_PhysicalDevice = nullptr;
-		Ref<VulkanDevice> m_Device = nullptr;
-		//Ref<VulkanSwapChain> m_SwapChain = nullptr;
-
+		static uint32_t s_VulkanUsers; // Amount of windows using these functionalities
 		friend class Renderer<RenderingAPI::Vulkan>;
 
 	///////////////////////////////////////////////////////////
-	// Static variables
+	// Config variables
 	///////////////////////////////////////////////////////////
 	public:
 		#if !defined(CT_CONFIG_DIST)
-			static constexpr bool s_Validation = true;
+			static constexpr const bool s_Validation = true;
 		#else
-			static constexpr bool s_Validation = false;
+			static constexpr const bool s_Validation = false;
 		#endif
 
 		static const std::vector<const char*> s_RequestedValidationLayers;

@@ -21,19 +21,27 @@ namespace Ct
 	template<>
 	class GraphicsContext<RenderingAPI::OpenGL> : public RefCounted
 	{
+	///////////////////////////////////////////////////////////
+	// Core functionality
+	///////////////////////////////////////////////////////////
 	public:
-		GraphicsContext(void* window, const RendererSpecification& specs);
-		~GraphicsContext();
+		static void Init();
+		static void Destroy();
 
-		inline const RendererSpecification& GetSpecification() const { return m_Specification; }
+		inline static uint32_t IncUsers() { return ++s_OpenGLUsers; }
+		inline static uint32_t DecUsers() { return --s_OpenGLUsers; }
 
+	///////////////////////////////////////////////////////////
+	// Private variables
+	///////////////////////////////////////////////////////////
 	private:
-		// Core
-		void* m_Window;
-		RendererSpecification m_Specification;
+		static uint32_t s_OpenGLUsers; // Amount of windows using these functionalities
 
 		friend class Renderer<RenderingAPI::OpenGL>;
 
+	///////////////////////////////////////////////////////////
+	// Config variables
+	///////////////////////////////////////////////////////////
     public:
 		inline static constinit const std::pair<uint8_t, uint8_t> Version = { 4, 5 }; // OpenGL version 4.5 (Core)
 	};

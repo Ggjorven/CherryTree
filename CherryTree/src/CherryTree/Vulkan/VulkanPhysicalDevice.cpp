@@ -8,9 +8,9 @@
 namespace Ct
 {
 
-	VulkanPhysicalDevice::VulkanPhysicalDevice(Ref<GraphicsContext<RenderingAPI::Vulkan>> context)
+	VulkanPhysicalDevice::VulkanPhysicalDevice(const VkSurfaceKHR surface)
 	{
-		const VkInstance instance = context->GetVkInstance();
+		const VkInstance instance = GraphicsContext<RenderingAPI::Vulkan>::GetVkInstance();
 
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -22,7 +22,7 @@ namespace Ct
 
 		for (const auto& device : devices)
 		{
-			if (PhysicalDeviceSuitable(context, device))
+			if (PhysicalDeviceSuitable(surface, device))
 			{
 				m_PhysicalDevice = device;
 				break;
@@ -38,7 +38,7 @@ namespace Ct
 		// Note(Jorben): Since a Physical Device is not something we created there is nothing to destroy
 	}
 
-	QueueFamilyIndices QueueFamilyIndices::Find(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice device)
+	QueueFamilyIndices QueueFamilyIndices::Find(const VkSurfaceKHR surface, const VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices = {};
 
@@ -62,7 +62,6 @@ namespace Ct
 				indices.ComputeFamily = i;
 
 			VkBool32 presentSupport = false;
-			const VkSurfaceKHR surface = context->GetVkSurface();
 			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 			if (presentSupport)
 				indices.PresentFamily = i;
@@ -73,11 +72,9 @@ namespace Ct
 		return indices;
 	}
 
-	SwapChainSupportDetails SwapChainSupportDetails::Query(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice device)
+	SwapChainSupportDetails SwapChainSupportDetails::Query(const VkSurfaceKHR surface, const VkPhysicalDevice device)
 	{
 		SwapChainSupportDetails details;
-
-		const VkSurfaceKHR surface = context->GetVkSurface();
 
 		// Capabilities
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.Capabilities);
@@ -105,16 +102,16 @@ namespace Ct
 		return details;
 	}
 
-	bool VulkanPhysicalDevice::PhysicalDeviceSuitable(Ref<GraphicsContext<RenderingAPI::Vulkan>> context, const VkPhysicalDevice& device)
+	bool VulkanPhysicalDevice::PhysicalDeviceSuitable(const VkSurfaceKHR surface, const VkPhysicalDevice device)
 	{
-		QueueFamilyIndices indices = QueueFamilyIndices::Find(context, device);
+		QueueFamilyIndices indices = QueueFamilyIndices::Find(surface, device);
 
 		bool extensionsSupported = ExtensionsSupported(device);
 		bool swapChainAdequate = false;
 
 		if (extensionsSupported)
 		{
-			SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::Query(context, device);
+			SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::Query(surface, device);
 			swapChainAdequate = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
 		}
 
@@ -124,7 +121,7 @@ namespace Ct
 		return indices.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy && supportedFeatures.fillModeNonSolid && supportedFeatures.wideLines;
 	}
 
-	bool VulkanPhysicalDevice::ExtensionsSupported(const VkPhysicalDevice& device)
+	bool VulkanPhysicalDevice::ExtensionsSupported(const VkPhysicalDevice device)
 	{
 		uint32_t extensionCount;
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -167,9 +164,9 @@ namespace Ct
 		return VK_FORMAT_UNDEFINED;
 	}
 
-	Ref<VulkanPhysicalDevice> VulkanPhysicalDevice::Select(Ref<GraphicsContext<RenderingAPI::Vulkan>> context)
+	Ref<VulkanPhysicalDevice> VulkanPhysicalDevice::Select(const VkSurfaceKHR surface)
 	{
-		return Ref<VulkanPhysicalDevice>::Create(context);
+		return Ref<VulkanPhysicalDevice>::Create(surface);
 	}
 
 }
