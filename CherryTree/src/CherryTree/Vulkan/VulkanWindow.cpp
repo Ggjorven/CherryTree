@@ -36,8 +36,9 @@ namespace Ct
 		WindowData::s_Instances++;
 
 		m_Context = Ref<GraphicsContext<RenderingAPI::Vulkan>>::Create((void*)m_Window, rendererSpecs);
+		m_Context->Init();
 
-		Input = Ref<Ct::Input<RenderingAPI::Vulkan>>::Create((void*)m_Window);
+		m_Input = Ref<Input<RenderingAPI::Vulkan>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		
@@ -138,7 +139,7 @@ namespace Ct
 
 		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}.{1}.XXX", GraphicsContext<RenderingAPI::Vulkan>::Version.first, GraphicsContext<RenderingAPI::Vulkan>::Version.second);
 
-		Renderer = Ref<Ct::Renderer<RenderingAPI::Vulkan>>::Create(m_Context);
+		m_Renderer = Ref<Renderer<RenderingAPI::Vulkan>>::Create(m_Context);
 	}
 
 	Window<RenderingAPI::Vulkan>::~Window()
@@ -154,7 +155,7 @@ namespace Ct
 
 	void Window<RenderingAPI::Vulkan>::SwapBuffers()
 	{
-		Renderer->Present();
+		m_Renderer->Present();
 	}
 
 	void Window<RenderingAPI::Vulkan>::Close()

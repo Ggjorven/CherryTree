@@ -44,9 +44,8 @@ namespace Ct
 
 		inline void* GetNativeWindow() { return (void*)m_Window; }
 
-	public:
-		Ref<Ct::Input<RenderingAPI::Vulkan>> Input = nullptr;
-		Ref<Ct::Renderer<RenderingAPI::Vulkan>> Renderer = nullptr;
+		inline Ref<Renderer<RenderingAPI::Vulkan>> GetRenderer() const { return m_Renderer; }
+		inline Ref<Input<RenderingAPI::Vulkan>> GetInput() const { return m_Input; }
 
 	private:
 		WindowData m_WindowData;
@@ -54,6 +53,8 @@ namespace Ct
 		GLFWwindow* m_Window = nullptr;
 
 		Ref<GraphicsContext<RenderingAPI::Vulkan>> m_Context = nullptr;
+		Ref<Renderer<RenderingAPI::Vulkan>> m_Renderer = nullptr;
+		Ref<Input<RenderingAPI::Vulkan>> m_Input = nullptr;
 	};
 
 }

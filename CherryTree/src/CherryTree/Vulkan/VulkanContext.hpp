@@ -4,6 +4,9 @@
 
 #include "CherryTree/Renderer/RendererSpecification.hpp"
 
+#include "CherryTree/Vulkan/VulkanDevice.hpp"
+#include "CherryTree/Vulkan/VulkanPhysicalDevice.hpp"
+
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
@@ -30,11 +33,16 @@ namespace Ct
 		GraphicsContext(void* window, const RendererSpecification& specs);
 		~GraphicsContext();
 
+		void Init();
+
 		inline const RendererSpecification& GetSpecification() const { return m_Specification; }
 
 		inline const VkInstance GetVkInstance() const { return m_VulkanInstance; }
 		inline const VkDebugUtilsMessengerEXT GetVkDebugger() const { return m_DebugMessenger; }
 		inline const VkSurfaceKHR GetVkSurface() const { return m_Surface; }
+
+		inline Ref<VulkanPhysicalDevice> GetPhysicalDevice() const { return m_PhysicalDevice; }
+		inline Ref<VulkanDevice> GetDevice() const { return m_Device; }
 
 	///////////////////////////////////////////////////////////
 	// Private variables
@@ -47,9 +55,9 @@ namespace Ct
 		VkDebugUtilsMessengerEXT m_DebugMessenger = VK_NULL_HANDLE;
 		VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
-		//Ref<VulkanPhysicalDevice> m_PhysicalDevice = VK_NULL_HANDLE;
-		//Ref<VulkanDevice> m_Device = VK_NULL_HANDLE;
-		//Ref<VulkanSwapChain> m_SwapChain = VK_NULL_HANDLE;
+		Ref<VulkanPhysicalDevice> m_PhysicalDevice = nullptr;
+		Ref<VulkanDevice> m_Device = nullptr;
+		//Ref<VulkanSwapChain> m_SwapChain = nullptr;
 
 		friend class Renderer<RenderingAPI::Vulkan>;
 

@@ -3,6 +3,8 @@
 
 #include "CherryTree/Core/Logging.hpp"
 
+#include "CherryTree/Vulkan/VulkanUtils.hpp"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
@@ -48,6 +50,28 @@ namespace Ct
 
 	GraphicsContext<RenderingAPI::Vulkan>::GraphicsContext(void* window, const RendererSpecification& specs)
 		: m_Window(window), m_Specification(specs)
+	{
+	}
+
+	GraphicsContext<RenderingAPI::Vulkan>::~GraphicsContext()
+	{
+		m_Device->Wait();
+
+		/*
+		m_SwapChain.reset();
+		VulkanAllocator::Destroy();
+		*/
+
+		m_Device.Reset();
+
+		if constexpr (s_Validation)
+			DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
+
+		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
+		vkDestroyInstance(m_VulkanInstance, nullptr);
+	}
+
+	void GraphicsContext<RenderingAPI::Vulkan>::Init()
 	{
 		///////////////////////////////////////////////////////////
 		// Instance Creation
@@ -113,55 +137,34 @@ namespace Ct
 			createInfo.pNext = nullptr;
 		}
 
-		if (vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance) != VK_SUCCESS)
-			CT_LOG_FATAL("Failed to create Vulkan Instance.");
+		VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &m_VulkanInstance));
 
 		///////////////////////////////////////////////////////////
 		// Debugger Creation
 		///////////////////////////////////////////////////////////
 		if constexpr (s_Validation)
 		{
-			if (CreateDebugUtilsMessengerEXT(m_VulkanInstance, &debugCreateInfo, nullptr, &m_DebugMessenger) != VK_SUCCESS)
-				CT_LOG_ERROR("Failed to set up debug messenger!");
+			VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(m_VulkanInstance, &debugCreateInfo, nullptr, &m_DebugMessenger));
 		}
 
 		///////////////////////////////////////////////////////////
 		// Surface Creation
 		///////////////////////////////////////////////////////////
 		GLFWwindow* handle = static_cast<GLFWwindow*>(m_Window);
-		if (glfwCreateWindowSurface(m_VulkanInstance, handle, nullptr, &m_Surface) != VK_SUCCESS)
-			CT_LOG_ERROR("Failed to create window surface!");
+		VK_CHECK_RESULT(glfwCreateWindowSurface(m_VulkanInstance, handle, nullptr, &m_Surface));
 
 		///////////////////////////////////////////////////////////
 		// Other
 		///////////////////////////////////////////////////////////
-		/*
-		m_PhysicalDevice = VulkanPhysicalDevice::Select();
-		m_Device = VulkanDevice::Create(m_PhysicalDevice);
+		m_PhysicalDevice = VulkanPhysicalDevice::Select(this);
+		m_Device = VulkanDevice::Create(this, m_PhysicalDevice);
 
+		/*
 		VulkanAllocator::Init();
 		auto& window = Application::Get().GetWindow();
 		m_SwapChain = VulkanSwapChain::Create(m_VulkanInstance, m_Device);
 		m_SwapChain->Init(window.GetWidth(), window.GetHeight(), window.IsVSync());
 		*/
-	}
-
-	GraphicsContext<RenderingAPI::Vulkan>::~GraphicsContext()
-	{
-		/*
-		m_Device->Wait();
-
-		m_SwapChain.reset();
-		VulkanAllocator::Destroy();
-
-		m_Device.reset();
-		*/
-
-		if constexpr (s_Validation)
-			DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
-
-		vkDestroySurfaceKHR(m_VulkanInstance, m_Surface, nullptr);
-		vkDestroyInstance(m_VulkanInstance, nullptr);
 	}
 
 }

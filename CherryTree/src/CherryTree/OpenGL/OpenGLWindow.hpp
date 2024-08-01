@@ -44,9 +44,8 @@ namespace Ct
 
 		inline void* GetNativeWindow() { return (void*)m_Window; }
 
-	public:
-		Ref<Ct::Input<RenderingAPI::OpenGL>> Input = nullptr;
-		Ref<Ct::Renderer<RenderingAPI::OpenGL>> Renderer = nullptr;
+		inline Ref<Renderer<RenderingAPI::OpenGL>> GetRenderer() const { return m_Renderer; }
+		inline Ref<Input<RenderingAPI::OpenGL>> GetInput() const { return m_Input; }
 
 	private:
 		WindowData m_WindowData;
@@ -54,6 +53,8 @@ namespace Ct
 		GLFWwindow* m_Window = nullptr;
 
 		Ref<GraphicsContext<RenderingAPI::OpenGL>> m_Context = nullptr;
+		Ref<Renderer<RenderingAPI::OpenGL>> m_Renderer = nullptr;
+		Ref<Input<RenderingAPI::OpenGL>> m_Input = nullptr;
 	};
 
 }

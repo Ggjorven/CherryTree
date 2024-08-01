@@ -43,7 +43,7 @@ namespace Ct
 		glfwMakeContextCurrent(m_Window);
 		m_Context = Ref<GraphicsContext<RenderingAPI::OpenGL>>::Create((void*)m_Window, rendererSpecs);
 
-		Input = Ref<Ct::Input<RenderingAPI::OpenGL>>::Create((void*)m_Window);
+		m_Input = Ref<Ct::Input<RenderingAPI::OpenGL>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
 		
@@ -145,8 +145,7 @@ namespace Ct
 
 		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
-		// TODO: Renderer
-		Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create(m_Context);
+		m_Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create(m_Context);
 	}
 
 	Window<RenderingAPI::OpenGL>::~Window()
