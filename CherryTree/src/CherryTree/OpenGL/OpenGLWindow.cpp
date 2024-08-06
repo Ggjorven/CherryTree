@@ -150,6 +150,7 @@ namespace Ct
 		});
 
 		m_Renderer = Ref<Ct::Renderer<RenderingAPI::OpenGL>>::Create((void*)m_Window, rendererSpecs);
+		m_Renderer->Init();
 
 		CT_LOG_INFO("Succesfully created OpenGL window. OpenGL version: {0}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 	}

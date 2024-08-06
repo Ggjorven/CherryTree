@@ -25,3 +25,4 @@ if ! command -v premake5 &> /dev/null; then
     echo "premake5 installed successfully."
 else
     echo "premake5 is already installed."
+fi

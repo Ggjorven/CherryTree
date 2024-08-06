@@ -4,6 +4,7 @@
 #include "CherryTree/Core/Logging.hpp"
 
 #include "CherryTree/Vulkan/VulkanUtils.hpp"
+#include "CherryTree/Vulkan/VulkanAllocator.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -38,6 +39,35 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL VulkanDebugCallback(VkDebugUtilsMessageSev
 	}
 
 	return VK_FALSE;
+}
+
+bool ValidationLayersSupported()
+{
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    // Check if all requested layers are actually accessible
+    for (const char* layerName : Ct::GraphicsContext<Ct::RenderingAPI::Vulkan>::s_RequestedValidationLayers)
+    {
+        bool layerFound = false;
+
+        for (const auto& layerProperties : availableLayers)
+        {
+            if (strcmp(layerName, layerProperties.layerName) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+            return false;
+    }
+
+    return true;
 }
 
 namespace Ct
@@ -80,10 +110,21 @@ namespace Ct
 		std::vector<const char*> instanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_EXTENSION_NAME };
 		if constexpr (s_Validation)
 		{
-			instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // Very little performance hit, can be used in Release.
-			instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-			instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+            if (!ValidationLayersSupported())
+            {
+                CT_LOG_ERROR("Validation layers are not supported!");
+            }
+            else
+            {
+                instanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); // Very little performance hit, can be used in Release.
+                instanceExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+                instanceExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+            }
 		}
+
+        #if defined(CT_PLATFORM_MACOS)
+        instanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        #endif
 
 		VkInstanceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -96,15 +137,18 @@ namespace Ct
 
 		if constexpr (s_Validation)
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>(s_RequestedValidationLayers.size());
-			createInfo.ppEnabledLayerNames = s_RequestedValidationLayers.data();
+            if (ValidationLayersSupported())
+            {
+			    createInfo.enabledLayerCount = static_cast<uint32_t>(s_RequestedValidationLayers.size());
+			    createInfo.ppEnabledLayerNames = s_RequestedValidationLayers.data();
+            }
 		}
 		else
 		{
 			createInfo.enabledLayerCount = 0;
 		}
 
-		// Note(Jorben): Setup the debug messenger also for the create instance 
+		// Note(Jorben): Setup the debug messenger also for the create instance
 		VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 		debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 		debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -113,10 +157,13 @@ namespace Ct
 
 		if constexpr (s_Validation)
 		{
-			createInfo.enabledLayerCount = static_cast<uint32_t>(s_RequestedValidationLayers.size());
-			createInfo.ppEnabledLayerNames = s_RequestedValidationLayers.data();
+            if (ValidationLayersSupported())
+            {
+			    createInfo.enabledLayerCount = static_cast<uint32_t>(s_RequestedValidationLayers.size());
+			    createInfo.ppEnabledLayerNames = s_RequestedValidationLayers.data();
 
-			createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+			    createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+            }
 		}
 		else
 		{
@@ -131,8 +178,11 @@ namespace Ct
 		///////////////////////////////////////////////////////////
 		if constexpr (s_Validation)
 		{
-			VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(s_VulkanInstance, &debugCreateInfo, nullptr, &s_DebugMessenger));
-		}
+            if (ValidationLayersSupported())
+            {
+			    VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(s_VulkanInstance, &debugCreateInfo, nullptr, &s_DebugMessenger));
+            }
+        }
 	}
 
 	void GraphicsContext<RenderingAPI::Vulkan>::CreateDevices(const VkSurfaceKHR surface)
@@ -145,9 +195,7 @@ namespace Ct
 		s_PhysicalDevice = VulkanPhysicalDevice::Select(surface);
 		s_Device = VulkanDevice::Create(surface, s_PhysicalDevice);
 
-		/*
-		VulkanAllocator::Init();
-		*/
+		Allocator<RenderingAPI::Vulkan>::Init();
 	}
 
 	void GraphicsContext<RenderingAPI::Vulkan>::Destroy()
@@ -156,14 +204,16 @@ namespace Ct
 
 		s_Device->Wait();
 
-		/*
-		VulkanAllocator::Destroy();
-		*/
+		Allocator<RenderingAPI::Vulkan>::Destroy();
 
+        s_PhysicalDevice.Reset();
 		s_Device.Reset();
 
 		if constexpr (s_Validation)
-			DestroyDebugUtilsMessengerEXT(s_VulkanInstance, s_DebugMessenger, nullptr);
+        {
+            if (s_DebugMessenger)
+			    DestroyDebugUtilsMessengerEXT(s_VulkanInstance, s_DebugMessenger, nullptr);
+        }
 
 		vkDestroyInstance(s_VulkanInstance, nullptr);
 	}

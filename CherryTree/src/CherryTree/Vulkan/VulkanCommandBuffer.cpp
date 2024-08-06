@@ -5,13 +5,14 @@
 
 #include "CherryTree/Vulkan/VulkanUtils.hpp"
 #include "CherryTree/Vulkan/VulkanContext.hpp"
-#include "CherryTree/Vulkan/VulkanRenderer.hpp"
+#include "CherryTree/Vulkan/VulkanAllocator.hpp"
 
 namespace Ct
 {
 
-	CommandBuffer<RenderingAPI::Vulkan>::CommandBuffer(Ref<Renderer<RenderingAPI::Vulkan>> renderer) // TODO: Create
+	CommandBuffer<RenderingAPI::Vulkan>::CommandBuffer(const uint8_t framesInFlight, const VkCommandPool pool) // TODO: Create
 	{
+		/*
 		auto device = GraphicsContext<RenderingAPI::Vulkan>::GetDevice()->GetVkDevice();
 		const uint32_t framesInFlight = (uint32_t)renderer->GetSpecification().Buffers;
 		m_CommandBuffers.resize(framesInFlight);
@@ -39,10 +40,12 @@ namespace Ct
 			VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]));
 			VK_CHECK_RESULT(vkCreateFence(device, &fenceInfo, nullptr, &m_InFlightFences[i]));
 		}
+		*/
 	}
 
 	CommandBuffer<RenderingAPI::Vulkan>::~CommandBuffer() // Note: This doesn't free the commandBuffer, we leave that up to the commandPool destruction (might not be the best choice)
 	{
+		/*
 		auto device = GraphicsContext<RenderingAPI::Vulkan>::GetDevice();
 		vkDeviceWaitIdle(device->GetVkDevice());
 
@@ -51,6 +54,7 @@ namespace Ct
 			vkDestroySemaphore(device->GetVkDevice(), m_RenderFinishedSemaphores[i], nullptr);
 			vkDestroyFence(device->GetVkDevice(), m_InFlightFences[i], nullptr);
 		}
+		*/
 	}
 
 

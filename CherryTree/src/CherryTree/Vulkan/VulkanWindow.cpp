@@ -43,19 +43,20 @@ namespace Ct
 
 		using Context = GraphicsContext<RenderingAPI::Vulkan>;
 
-		if (Context::IncUsers() == 1)
+        bool init = (Context::IncUsers() == 1);
+		if (init)
 			Context::CreateInstance();
 
 		VkSurfaceKHR surface = VK_NULL_HANDLE;
 		VK_CHECK_RESULT(glfwCreateWindowSurface(Context::GetVkInstance(), m_Window, nullptr, &surface));
 
-		if (Context::IncUsers() == 1)
+		if (init)
 			Context::CreateDevices(surface);
 
 		m_Input = Ref<Input<RenderingAPI::Vulkan>>::Create((void*)m_Window);
 
 		glfwSetWindowUserPointer(m_Window, (void*)&m_WindowData); //So we can access/get to the data in lambda functions
-		
+
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
@@ -152,6 +153,7 @@ namespace Ct
 		});
 
 		m_Renderer = Ref<Renderer<RenderingAPI::Vulkan>>::Create((void*)m_Window, rendererSpecs, surface);
+		m_Renderer->Init(m_WindowData.Width, m_WindowData.Height);
 
 		CT_LOG_INFO("Succesfully created Vulkan window. Vulkan version: {0}.{1}.XXX", GraphicsContext<RenderingAPI::Vulkan>::Version.first, GraphicsContext<RenderingAPI::Vulkan>::Version.second);
 	}
@@ -181,10 +183,10 @@ namespace Ct
 	{
 		m_WindowData.Closed = true;
 
+        m_Renderer.Reset();
+
 		if (GraphicsContext<RenderingAPI::Vulkan>::DecUsers() == 0)
 			GraphicsContext<RenderingAPI::Vulkan>::Destroy();
-
-		// TODO: Renderer
 
 		glfwDestroyWindow(m_Window);
 		m_Window = nullptr;

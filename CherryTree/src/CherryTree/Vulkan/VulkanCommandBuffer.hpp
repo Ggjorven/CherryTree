@@ -12,7 +12,7 @@ namespace Ct
 {
 
 	template<RenderingAPI API>
-	class Renderer;
+	class Allocator;
 
 	template<RenderingAPI API>
 	class CommandBuffer;
@@ -23,7 +23,6 @@ namespace Ct
 	class CommandBuffer<RenderingAPI::Vulkan> : public RefCounted
 	{
 	public:
-		CommandBuffer(Ref<Renderer<RenderingAPI::Vulkan>> renderer);
 		virtual ~CommandBuffer();
 
 		// The Begin, End & Submit methods are in the Renderer class.
@@ -33,11 +32,16 @@ namespace Ct
 		inline const VkCommandBuffer GetVkCommandBuffer(uint32_t index) const { return m_CommandBuffers[index]; }
 
 	private:
+		CommandBuffer(const uint8_t framesInFlight, const VkCommandPool pool);
+
+	private:
 		std::vector<VkCommandBuffer> m_CommandBuffers = { };
 
 		// Syncronization objects
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores = { };
 		std::vector<VkFence> m_InFlightFences = { };
+
+		friend class Allocator<RenderingAPI::Vulkan>;
 	};
 
 

@@ -27,7 +27,7 @@ install_arch() {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     case "$ID" in
-        ubuntu|debian)
+        ubuntu|debian|linuxmint)
             install_ubuntu_debian
             ;;
         fedora)

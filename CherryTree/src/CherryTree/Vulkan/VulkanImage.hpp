@@ -17,12 +17,14 @@ namespace Ct
 
 	using namespace Pulse::Enum::Bitwise;
 
-	// Note: This does nothing, it just shows the class
+	template<RenderingAPI API>
+	class Allocator;
+
 	template<RenderingAPI API>
 	class Image;
 
 	///////////////////////////////////////////////////////////
-	// Specifications 
+	// Specifications // TODO: Make Vulkan related so that there can be a ImageSpecification for OpenGL
 	///////////////////////////////////////////////////////////
 	enum class ImageUsage : uint8_t		{ None = 0, Size, File };
 	enum class ImageUsageFlags : uint8_t
@@ -108,10 +110,9 @@ namespace Ct
 	// Core class
 	///////////////////////////////////////////////////////////
 	template<>
-	class Image<RenderingAPI::Vulkan>
+	class Image<RenderingAPI::Vulkan> : public RefCounted
 	{
 	public:
-		Image(const ImageSpecification& specs);
 		~Image();
 
 		void SetData(void* data, size_t size);
@@ -131,6 +132,9 @@ namespace Ct
 		inline const VkSampler GetVkSampler() const { return m_Sampler; }
 
 	private:
+		Image(const ImageSpecification& specs);
+
+	private:
 		ImageSpecification m_Specification = {};
 
 		VkImage m_Image = VK_NULL_HANDLE;
@@ -139,6 +143,8 @@ namespace Ct
 		VkSampler m_Sampler = VK_NULL_HANDLE;
 
 		uint32_t m_Miplevels = 1;
+
+		friend class Allocator<RenderingAPI::Vulkan>;
 	};
 
 }

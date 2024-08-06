@@ -20,8 +20,12 @@ namespace Ct
 	{
 	}
 
-	void Renderer<RenderingAPI::Vulkan>::Init()
+	void Renderer<RenderingAPI::Vulkan>::Init(uint32_t width, uint32_t height)
 	{
+		m_Allocator = Ref<Allocator<RenderingAPI::Vulkan>>::Create((uint8_t)m_Specification.Buffers);
+
+		// TODO: Create swapchain
+		m_SwapChain = Ref<VulkanSwapChain>::Create(m_Allocator, m_Surface, (uint8_t)m_Specification.Buffers);
 	}
 
 	void Renderer<RenderingAPI::Vulkan>::Present()
