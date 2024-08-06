@@ -1,56 +1,58 @@
+require("vendor/premake5-vscode/vscode")
+
 ------------------------------------------------------------------------------
 -- Dependencies
 ------------------------------------------------------------------------------
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
-Dependencies = 
+Dependencies =
 {
 	-- Vulkan Related
-	Vulkan = 
+	Vulkan =
 	{
-		Windows = 
+		Windows =
 		{
 			LibName = "vulkan-1",
 			IncludeDir = "%{VULKAN_SDK}/Include/",
 			LibDir = "%{VULKAN_SDK}/Lib/"
 		},
-		Linux =  
+		Linux =
 		{
 			LibName = "vulkan",
 			IncludeDir = "%{VULKAN_SDK}/include/",
 			LibDir = "%{VULKAN_SDK}/lib/"
 		}
 	},
-	ShaderC = 
+	ShaderC =
 	{
 		LibName = "shaderc_shared"
 	},
-	VMA = 
+	VMA =
 	{
 		LibName = "VMA",
 		IncludeDir = "%{wks.location}/vendor/vma/include"
 	},
 
 	-- All other Third-Party libraries
-	spdlog = 
+	spdlog =
 	{
 		IncludeDir = "%{wks.location}/vendor/spdlog/include"
 	},
-	glfw = 
+	glfw =
 	{
 		LibName = "GLFW",
 		IncludeDir = "%{wks.location}/vendor/glfw/include"
 	},
-	glad = 
+	glad =
 	{
 		LibName = "Glad",
 		IncludeDir = "%{wks.location}/vendor/glad/include"
 	},
-	glm = 
+	glm =
 	{
 		IncludeDir = "%{wks.location}/vendor/glm"
 	},
-	Pulse = 
+	Pulse =
 	{
 		LibName = "Pulse",
 		IncludeDir = "%{wks.location}/vendor/Pulse/Pulse/src"

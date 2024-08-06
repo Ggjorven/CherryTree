@@ -18,6 +18,7 @@ namespace Ct
 
 	Renderer<RenderingAPI::Vulkan>::~Renderer()
 	{
+        vkDestroySurfaceKHR(GraphicsContext<RenderingAPI::Vulkan>::GetVkInstance(), m_Surface, nullptr);
 	}
 
 	void Renderer<RenderingAPI::Vulkan>::Init(uint32_t width, uint32_t height)

@@ -10,3 +10,6 @@
 [submodule "vendor/glm"]
 	path = vendor/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "vendor/premake5-vscode"]
+	path = vendor/premake5-vscode
+	url = https://github.com/peter1745/premake-vscode.git

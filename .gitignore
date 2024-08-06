@@ -6,7 +6,11 @@
 /.vscode
 /.vscode/*
 /.vscode/**
+**/.vscode/
 *.code-workspace
+**/*.code-workspace
+
+/Tasks/
 
 # Local History for Visual Studio Code
 .history/
